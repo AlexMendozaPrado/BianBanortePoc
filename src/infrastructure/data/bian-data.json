@@ -1,0 +1,144 @@
+{
+  "capabilities": [
+    {
+      "id": "CE-01",
+      "name": "Customer Relationship Management",
+      "description": "Gestión integral de las relaciones con clientes, incluyendo el ciclo de vida completo desde la prospección hasta el mantenimiento de la relación a largo plazo.",
+      "category": "CE",
+      "isActive": true,
+      "subCapabilities": [
+        {
+          "id": "CE-01-01",
+          "name": "Customer Acquisition",
+          "description": "Procesos para adquirir nuevos clientes",
+          "capabilityId": "CE-01",
+          "isActive": true,
+          "functionalities": [
+            {
+              "id": "func_ce_01_01_001",
+              "name": "Lead Generation",
+              "description": "Generación de prospectos de clientes potenciales",
+              "subCapabilityId": "CE-01-01",
+              "capabilityId": "CE-01",
+              "businessValue": "Incrementa la base de clientes potenciales",
+              "technicalRequirements": ["CRM System", "Marketing Automation"],
+              "dependencies": ["MK-01"],
+              "isActive": true,
+              "complexity": "Medium",
+              "estimatedEffort": 40
+            },
+            {
+              "id": "func_ce_01_01_002",
+              "name": "Customer Onboarding",
+              "description": "Proceso de incorporación de nuevos clientes",
+              "subCapabilityId": "CE-01-01",
+              "capabilityId": "CE-01",
+              "businessValue": "Mejora la experiencia inicial del cliente",
+              "technicalRequirements": ["Digital Forms", "Document Management"],
+              "dependencies": ["CM-01"],
+              "isActive": true,
+              "complexity": "High",
+              "estimatedEffort": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PD-01",
+      "name": "Product Design & Development",
+      "description": "Diseño y desarrollo de productos financieros innovadores que satisfagan las necesidades del mercado y cumplan con los requisitos regulatorios.",
+      "category": "PD",
+      "isActive": true,
+      "subCapabilities": [
+        {
+          "id": "PD-01-01",
+          "name": "Product Innovation",
+          "description": "Innovación en productos financieros",
+          "capabilityId": "PD-01",
+          "isActive": true,
+          "functionalities": [
+            {
+              "id": "func_pd_01_01_001",
+              "name": "Market Research",
+              "description": "Investigación de mercado para nuevos productos",
+              "subCapabilityId": "PD-01-01",
+              "capabilityId": "PD-01",
+              "businessValue": "Identifica oportunidades de mercado",
+              "technicalRequirements": ["Analytics Platform", "Survey Tools"],
+              "dependencies": ["MK-02"],
+              "isActive": true,
+              "complexity": "Medium",
+              "estimatedEffort": 35
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OP-01",
+      "name": "Operations Management",
+      "description": "Gestión de operaciones bancarias diarias, incluyendo procesamiento de transacciones, gestión de efectivo y operaciones de back-office.",
+      "category": "OP",
+      "isActive": true,
+      "subCapabilities": [
+        {
+          "id": "OP-01-01",
+          "name": "Transaction Processing",
+          "description": "Procesamiento de transacciones bancarias",
+          "capabilityId": "OP-01",
+          "isActive": true,
+          "functionalities": [
+            {
+              "id": "func_op_01_01_001",
+              "name": "Payment Processing",
+              "description": "Procesamiento de pagos y transferencias",
+              "subCapabilityId": "OP-01-01",
+              "capabilityId": "OP-01",
+              "businessValue": "Facilita transacciones eficientes",
+              "technicalRequirements": ["Core Banking System", "Payment Gateway"],
+              "dependencies": ["PM-01", "SE-01"],
+              "isActive": true,
+              "complexity": "High",
+              "estimatedEffort": 80
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "code": "CE",
+      "description": "Customer Engagement",
+      "color": "#1976d2"
+    },
+    {
+      "code": "PD",
+      "description": "Product Development",
+      "color": "#388e3c"
+    },
+    {
+      "code": "OP",
+      "description": "Operations",
+      "color": "#f57c00"
+    },
+    {
+      "code": "RM",
+      "description": "Risk Management",
+      "color": "#d32f2f"
+    },
+    {
+      "code": "FM",
+      "description": "Financial Management",
+      "color": "#7b1fa2"
+    }
+  ],
+  "metadata": {
+    "version": "12.0.0",
+    "lastUpdated": "2024-01-15T00:00:00.000Z",
+    "totalCapabilities": 3,
+    "totalSubCapabilities": 3,
+    "totalFunctionalities": 3
+  }
+}
