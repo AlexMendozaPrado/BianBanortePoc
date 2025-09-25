@@ -1,28 +1,28 @@
-import { CapabilityRepository } from '../../../domain/ports/CapabilityRepository';
-import { Capability } from '../../../domain/entities/Capability';
-import { CategoryType } from '../../../domain/value-objects/CategoryType';
+import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroupRepository';
+import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
+import { StyleType } from '../../../domain/value-objects/StyleType';
 
 /**
- * Caso de uso para obtener el árbol de capacidades organizadas por categoría
+ * Caso de uso para obtener el árbol de capacidades con nueva estructura de 5 niveles
  */
 export class GetCapabilityTree {
-  constructor(private readonly capabilityRepository: CapabilityRepository) {}
+  constructor(private readonly capabilityGroupRepository: CapabilityGroupRepository) {}
 
   /**
-   * Ejecuta la obtención del árbol de capacidades
+   * Ejecuta la obtención del árbol de capacidades con estructura de 5 niveles
    */
   async execute(request: GetCapabilityTreeRequest = {}): Promise<GetCapabilityTreeResponse> {
     try {
       const startTime = Date.now();
 
-      // Obtener todas las capacidades
-      const capabilities = await this.capabilityRepository.findAll();
+      // Obtener todos los grupos de capacidades
+      const capabilityGroups = await this.capabilityGroupRepository.findAll();
 
-      // Filtrar capacidades si es necesario
-      const filteredCapabilities = this.filterCapabilities(capabilities, request);
+      // Filtrar grupos si es necesario
+      const filteredGroups = this.filterCapabilityGroups(capabilityGroups, request);
 
-      // Organizar en árbol por categorías
-      const tree = this.buildCapabilityTree(filteredCapabilities);
+      // Construir árbol de 5 niveles
+      const tree = this.buildCapabilityTree(filteredGroups);
 
       // Calcular estadísticas
       const stats = this.calculateTreeStats(tree);
@@ -49,149 +49,159 @@ export class GetCapabilityTree {
   }
 
   /**
-   * Filtra las capacidades según los criterios de la solicitud
+   * Filtra los grupos de capacidades según los criterios de la solicitud
    */
-  private filterCapabilities(capabilities: Capability[], request: GetCapabilityTreeRequest): Capability[] {
-    let filtered = capabilities;
+  private filterCapabilityGroups(groups: CapabilityGroup[], request: GetCapabilityTreeRequest): CapabilityGroup[] {
+    let filtered = groups;
 
     // Filtrar por estado activo
     if (request.activeOnly) {
-      filtered = filtered.filter(cap => cap.isActive);
+      filtered = filtered.filter(group => group.isActive);
     }
 
-    // Filtrar por categorías específicas
-    if (request.categories && request.categories.length > 0) {
-      filtered = filtered.filter(cap => 
-        request.categories!.some(category => cap.category.value === category)
+    // Filtrar por estilos específicos
+    if (request.styles && request.styles.length > 0) {
+      filtered = filtered.filter(group =>
+        request.styles!.some(style => group.style.getValue() === style)
       );
     }
 
-    // Filtrar por capacidades que tengan subcapacidades
-    if (request.withSubCapabilitiesOnly) {
-      filtered = filtered.filter(cap => cap.subCapabilities.length > 0);
+    // Filtrar por grupos que tengan capacidades
+    if (request.withCapabilitiesOnly) {
+      filtered = filtered.filter(group => group.hasCapabilities());
     }
 
-    // Filtrar por capacidades que tengan funcionalidades
+    // Filtrar por grupos que tengan funcionalidades
     if (request.withFunctionalitiesOnly) {
-      filtered = filtered.filter(cap => cap.getTotalFunctionalities() > 0);
+      filtered = filtered.filter(group =>
+        group.capabilities.some(cap => cap.getTotalFunctionalities() > 0)
+      );
     }
 
     return filtered;
   }
 
   /**
-   * Construye el árbol de capacidades organizadas por categoría
+   * Construye el árbol de capacidades con estructura de 5 niveles
    */
-  private buildCapabilityTree(capabilities: Capability[]): CapabilityTreeNode[] {
-    // Agrupar capacidades por categoría
-    const capabilitiesByCategory = new Map<string, Capability[]>();
-
-    capabilities.forEach(capability => {
-      const categoryCode = capability.category.value;
-      if (!capabilitiesByCategory.has(categoryCode)) {
-        capabilitiesByCategory.set(categoryCode, []);
-      }
-      capabilitiesByCategory.get(categoryCode)!.push(capability);
-    });
-
-    // Crear nodos del árbol
+  private buildCapabilityTree(groups: CapabilityGroup[]): CapabilityTreeNode[] {
+    // Crear nodos del árbol para cada grupo
     const treeNodes: CapabilityTreeNode[] = [];
 
-    // Obtener todas las categorías disponibles para mantener el orden
-    const allCategories = CategoryType.getAllCategories();
+    groups.forEach(group => {
+      const groupNode: CapabilityTreeNode = {
+        id: group.id,
+        name: group.name,
+        type: 'group',
+        children: group.capabilities.map(capability => this.buildCapabilityNode(capability)),
+        isExpanded: false,
+        metadata: {
+          style: group.style.getValue(),
+          styleColor: group.style.getColor(),
+          totalCapabilities: group.capabilities.length,
+          totalBusinessCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalBusinessCapabilities(), 0),
+          totalSubCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getAllSubCapabilities().length, 0),
+          totalFunctionalities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalFunctionalities(), 0),
+          isActive: group.isActive
+        }
+      };
 
-    allCategories.forEach(categoryInfo => {
-      const capabilities = capabilitiesByCategory.get(categoryInfo.code) || [];
-      
-      if (capabilities.length > 0) {
-        const categoryNode: CapabilityTreeNode = {
-          id: categoryInfo.code,
-          name: categoryInfo.description,
-          type: 'category',
-          children: capabilities.map(capability => this.buildCapabilityNode(capability)),
-          isExpanded: false,
-          metadata: {
-            categoryCode: categoryInfo.code,
-            totalCapabilities: capabilities.length,
-            totalSubCapabilities: capabilities.reduce((sum, cap) => sum + cap.subCapabilities.length, 0),
-            totalFunctionalities: capabilities.reduce((sum, cap) => sum + cap.getTotalFunctionalities(), 0)
-          }
-        };
-
-        treeNodes.push(categoryNode);
-      }
+      treeNodes.push(groupNode);
     });
 
     return treeNodes;
   }
 
   /**
-   * Construye un nodo para una capacidad específica
+   * Construye un nodo para una capacidad específica con nueva estructura de 5 niveles
    */
-  private buildCapabilityNode(capability: Capability): CapabilityTreeNode {
-    const subCapabilityNodes = capability.subCapabilities.map(subCap => ({
-      id: subCap.id,
-      name: subCap.name,
-      type: 'subcapability' as const,
-      children: subCap.functionalities.map(func => ({
-        id: func.id.value,
-        name: func.name,
-        type: 'functionality' as const,
-        children: [],
+  private buildCapabilityNode(capability: any): CapabilityTreeNode {
+    const businessCapabilityNodes = capability.businessCapabilities.map((businessCap: any) => ({
+      id: businessCap.id,
+      name: businessCap.name,
+      type: 'business' as const,
+      children: businessCap.subCapabilities.map((subCap: any) => ({
+        id: subCap.id,
+        name: subCap.name,
+        type: 'subcapability' as const,
+        children: subCap.functionalities.map((func: any) => ({
+          id: func.id,
+          name: func.name,
+          type: 'functionality' as const,
+          children: [],
+          isExpanded: false,
+          metadata: {
+            description: func.description,
+            isActive: func.isActive,
+            isCompletelyDefined: func.isCompletelyDefined(),
+            canBeActivated: func.canBeActivated()
+          }
+        })),
         isExpanded: false,
         metadata: {
-          complexity: func.complexity,
-          estimatedEffort: func.estimatedEffort,
-          isActive: func.isActive
+          description: subCap.description,
+          totalFunctionalities: subCap.functionalities.length,
+          isActive: subCap.isActive,
+          canBeActivated: subCap.canBeActivated()
         }
       })),
       isExpanded: false,
       metadata: {
-        totalFunctionalities: subCap.functionalities.length,
-        isActive: subCap.isActive
+        description: businessCap.description,
+        totalSubCapabilities: businessCap.subCapabilities.length,
+        totalFunctionalities: businessCap.getAllFunctionalities().length,
+        isActive: businessCap.isActive,
+        isReadyForProduction: businessCap.isReadyForProduction()
       }
     }));
 
     return {
-      id: capability.id.value,
+      id: capability.id.getValue(),
       name: capability.name,
       type: 'capability',
-      children: subCapabilityNodes,
+      children: businessCapabilityNodes,
       isExpanded: false,
       metadata: {
-        categoryCode: capability.category.value,
-        totalSubCapabilities: capability.subCapabilities.length,
+        groupId: capability.groupId,
+        totalBusinessCapabilities: capability.getTotalBusinessCapabilities(),
         totalFunctionalities: capability.getTotalFunctionalities(),
-        isActive: capability.isActive
+        isActive: capability.isActive,
+        canBeActivated: capability.canBeActivated()
       }
     };
   }
 
   /**
-   * Calcula estadísticas del árbol
+   * Calcula estadísticas del árbol con nueva estructura de 5 niveles
    */
   private calculateTreeStats(tree: CapabilityTreeNode[]): TreeStats {
-    let totalCategories = 0;
+    let totalGroups = 0;
     let totalCapabilities = 0;
+    let totalBusinessCapabilities = 0;
     let totalSubCapabilities = 0;
     let totalFunctionalities = 0;
 
-    tree.forEach(categoryNode => {
-      totalCategories++;
-      
-      categoryNode.children.forEach(capabilityNode => {
+    tree.forEach(groupNode => {
+      totalGroups++;
+
+      groupNode.children.forEach(capabilityNode => {
         totalCapabilities++;
-        
-        capabilityNode.children.forEach(subCapabilityNode => {
-          totalSubCapabilities++;
-          totalFunctionalities += subCapabilityNode.children.length;
+
+        capabilityNode.children.forEach(businessCapabilityNode => {
+          totalBusinessCapabilities++;
+
+          businessCapabilityNode.children.forEach(subCapabilityNode => {
+            totalSubCapabilities++;
+            totalFunctionalities += subCapabilityNode.children.length;
+          });
         });
       });
     });
 
     return {
-      totalCategories,
+      totalGroups,
       totalCapabilities,
+      totalBusinessCapabilities,
       totalSubCapabilities,
       totalFunctionalities
     };
@@ -199,17 +209,17 @@ export class GetCapabilityTree {
 }
 
 /**
- * Solicitud para obtener el árbol de capacidades
+ * Solicitud para obtener el árbol de capacidades (nueva estructura)
  */
 export interface GetCapabilityTreeRequest {
   activeOnly?: boolean;
-  categories?: string[];
-  withSubCapabilitiesOnly?: boolean;
+  styles?: string[];
+  withCapabilitiesOnly?: boolean;
   withFunctionalitiesOnly?: boolean;
 }
 
 /**
- * Respuesta con el árbol de capacidades
+ * Respuesta con el árbol de capacidades (nueva estructura)
  */
 export interface GetCapabilityTreeResponse {
   success: boolean;
@@ -221,23 +231,24 @@ export interface GetCapabilityTreeResponse {
 }
 
 /**
- * Nodo del árbol de capacidades
+ * Nodo del árbol de capacidades (5 niveles)
  */
 export interface CapabilityTreeNode {
   id: string;
   name: string;
-  type: 'category' | 'capability' | 'subcapability' | 'functionality';
+  type: 'group' | 'capability' | 'business' | 'subcapability' | 'functionality';
   children: CapabilityTreeNode[];
   isExpanded: boolean;
   metadata?: Record<string, any>;
 }
 
 /**
- * Estadísticas del árbol
+ * Estadísticas del árbol (nueva estructura)
  */
 export interface TreeStats {
-  totalCategories: number;
+  totalGroups: number;
   totalCapabilities: number;
+  totalBusinessCapabilities: number;
   totalSubCapabilities: number;
   totalFunctionalities: number;
 }

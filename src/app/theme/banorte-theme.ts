@@ -4,19 +4,20 @@ import { createTheme } from '@mui/material/styles';
 
 /**
  * Tema personalizado de Banorte para Material-UI
+ * Basado en las especificaciones técnicas del Figma
  */
 export const banorteTheme = createTheme({
   palette: {
     primary: {
-      main: '#E31E24', // Rojo Banorte
-      light: '#FF5A5F',
-      dark: '#B71C1C',
+      main: '#EB0029', // Rojo Banorte exacto
+      light: '#FF5252',
+      dark: '#E30028',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#1976D2', // Azul complementario
-      light: '#42A5F5',
-      dark: '#1565C0',
+      main: '#5B6670', // Gris secundario
+      light: '#A2A9AD',
+      dark: '#323E48',
       contrastText: '#FFFFFF',
     },
     error: {
@@ -40,19 +41,19 @@ export const banorteTheme = createTheme({
       dark: '#388E3C',
     },
     grey: {
-      50: '#FAFAFA',
-      100: '#F5F5F5',
-      200: '#EEEEEE',
-      300: '#E0E0E0',
-      400: '#BDBDBD',
-      500: '#9E9E9E',
+      50: '#F4F7F8',
+      100: '#EBF0F2',
+      200: '#CFD2D3',
+      300: '#A2A9AD',
+      400: '#5B6670',
+      500: '#323E48',
       600: '#757575',
       700: '#616161',
       800: '#424242',
       900: '#212121',
     },
     background: {
-      default: '#FAFAFA',
+      default: '#F4F7F8',
       paper: '#FFFFFF',
     },
     text: {
@@ -62,56 +63,63 @@ export const banorteTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Inter',
+      '"Roboto"',
       '-apple-system',
       'BlinkMacSystemFont',
       '"Segoe UI"',
-      'Roboto',
       '"Helvetica Neue"',
       'Arial',
       'sans-serif',
     ].join(','),
     h1: {
+      fontFamily: 'Gotham',
+      fontWeight: 'bold',
       fontSize: '2.5rem',
-      fontWeight: 600,
       lineHeight: 1.2,
-      color: '#212121',
+      color: '#323E48',
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 600,
+      fontFamily: 'Gotham',
+      fontWeight: '600',
+      fontSize: '18px',
       lineHeight: 1.3,
-      color: '#212121',
+      color: '#323E48',
     },
     h3: {
       fontSize: '1.75rem',
       fontWeight: 600,
       lineHeight: 1.4,
-      color: '#212121',
+      color: '#323E48',
     },
     h4: {
       fontSize: '1.5rem',
       fontWeight: 600,
       lineHeight: 1.4,
-      color: '#212121',
+      color: '#323E48',
     },
     h5: {
       fontSize: '1.25rem',
       fontWeight: 600,
       lineHeight: 1.5,
-      color: '#212121',
+      color: '#323E48',
     },
     h6: {
-      fontSize: '1rem',
-      fontWeight: 600,
+      fontFamily: 'Gotham',
+      fontSize: '18px',
+      fontWeight: 'medium',
       lineHeight: 1.5,
-      color: '#212121',
+      color: '#323E48',
     },
     subtitle1: {
       fontSize: '1rem',
       fontWeight: 400,
       lineHeight: 1.5,
-      color: '#757575',
+      color: '#5B6670',
+    },
+    button: {
+      fontFamily: 'Gotham',
+      fontWeight: '500',
+      textTransform: 'none',
     },
     subtitle2: {
       fontSize: '0.875rem',
@@ -151,29 +159,41 @@ export const banorteTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: '4px',
+          height: '45px',
+          fontFamily: 'Gotham',
+          fontSize: '15px',
+          fontWeight: 'medium',
           textTransform: 'none',
-          fontWeight: 500,
-          padding: '8px 16px',
           boxShadow: 'none',
-          '&:hover': {
-            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-          },
         },
         contained: {
+          backgroundColor: '#EB0029',
           '&:hover': {
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
+            backgroundColor: '#E30028',
           },
+        },
+        outlined: {
+          borderColor: '#EB0029',
+          color: '#EB0029',
+          height: '40px',
+          fontFamily: 'Gotham',
+          fontSize: '15px',
+          textTransform: 'none',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+          borderRadius: '8px',
+          boxShadow: '0 3px 6px rgba(0,0,0,0.16)',
+          border: '1px solid #CFD2D3',
+          transition: 'all 0.2s ease',
+          cursor: 'pointer',
           '&:hover': {
-            boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 6px 12px rgba(0,0,0,0.2)',
+            transform: 'translateY(-2px)',
           },
         },
       },
@@ -181,8 +201,9 @@ export const banorteTheme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          fontWeight: 500,
+          fontFamily: 'Gotham',
+          fontSize: '13px',
+          height: '32px',
         },
       },
     },
@@ -190,8 +211,74 @@ export const banorteTheme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
+            borderRadius: '6px',
+            fontFamily: 'Gotham',
           },
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#EB0029',
+          height: '63px',
+          boxShadow: 'none',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#F4F7F8',
+          borderRight: '1px solid #CFD2D3',
+        },
+      },
+    },
+    MuiTreeItem: {
+      styleOverrides: {
+        root: {
+          '& .MuiTreeItem-content': {
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontFamily: 'Gotham',
+            fontSize: '14px',
+            color: '#323E48',
+          },
+          '& .Mui-selected': {
+            backgroundColor: '#EB0029 !important',
+            color: 'white',
+          },
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          border: '1px solid #CFD2D3',
+          '&.Mui-selected': {
+            backgroundColor: '#EB0029',
+            color: 'white',
+          },
+        },
+      },
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          boxShadow: 'none',
+          border: '1px solid #EBF0F2',
+          '&:before': {
+            display: 'none'
+          },
+        },
+      },
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Gotham',
+          fontSize: '14px',
+          fontWeight: '500',
         },
       },
     },

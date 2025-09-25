@@ -1,67 +1,79 @@
-import { FunctionalityId } from '../value-objects/FunctionalityId';
-
 /**
  * Entidad que representa una Funcionalidad específica dentro de una SubCapacidad
  */
 export class Functionality {
   constructor(
-    public readonly id: FunctionalityId,
+    public readonly id: string,
     public readonly name: string,
     public readonly description: string,
     public readonly subCapabilityId: string,
-    public readonly capabilityId: string,
-    public readonly businessValue: string,
-    public readonly technicalRequirements: string[] = [],
-    public readonly dependencies: string[] = [],
     public readonly isActive: boolean = true,
-    public readonly complexity: 'Low' | 'Medium' | 'High' = 'Medium',
-    public readonly estimatedEffort: number = 0, // en horas
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date()
   ) {}
 
   /**
-   * Verifica si la funcionalidad tiene dependencias
+   * Regla de negocio: Verifica si la funcionalidad puede ser activada
    */
-  hasDependencies(): boolean {
-    return this.dependencies.length > 0;
+  canBeActivated(): boolean {
+    return this.name.trim().length > 0 && this.description.trim().length > 5;
   }
 
   /**
-   * Verifica si la funcionalidad tiene requisitos técnicos
+   * Regla de negocio: Verifica si está completamente definida
    */
-  hasTechnicalRequirements(): boolean {
-    return this.technicalRequirements.length > 0;
+  isCompletelyDefined(): boolean {
+    return this.name.trim().length > 0 && this.description.trim().length > 10;
   }
 
   /**
-   * Obtiene el nivel de complejidad como número
+   * Regla de negocio: Verifica si está lista para implementación
    */
-  getComplexityLevel(): number {
-    switch (this.complexity) {
-      case 'Low': return 1;
-      case 'Medium': return 2;
-      case 'High': return 3;
-      default: return 2;
+  isReadyForImplementation(): boolean {
+    return this.isActive && this.isCompletelyDefined();
+  }
+
+  /**
+   * Comportamiento de dominio: Activa la funcionalidad
+   */
+  activate(): Functionality {
+    if (!this.canBeActivated()) {
+      throw new Error("Functionality cannot be activated: incomplete definition");
     }
+    return this.update({ isActive: true });
   }
 
   /**
-   * Crea una copia de la funcionalidad con nuevos valores
+   * Comportamiento de dominio: Desactiva la funcionalidad
    */
-  update(updates: Partial<Pick<Functionality, 'name' | 'description' | 'businessValue' | 'technicalRequirements' | 'dependencies' | 'isActive' | 'complexity' | 'estimatedEffort'>>): Functionality {
+  deactivate(): Functionality {
+    return this.update({ isActive: false });
+  }
+
+  /**
+   * Verifica si el nombre es válido según reglas de negocio
+   */
+  hasValidName(): boolean {
+    return this.name.trim().length >= 3 && this.name.trim().length <= 100;
+  }
+
+  /**
+   * Verifica si la descripción es válida según reglas de negocio
+   */
+  hasValidDescription(): boolean {
+    return this.description.trim().length >= 10 && this.description.trim().length <= 500;
+  }
+
+  /**
+   * Crea una copia de la funcionalidad con nuevos valores (patrón inmutable)
+   */
+  update(updates: Partial<Pick<Functionality, 'name' | 'description' | 'isActive'>>): Functionality {
     return new Functionality(
       this.id,
       updates.name ?? this.name,
       updates.description ?? this.description,
       this.subCapabilityId,
-      this.capabilityId,
-      updates.businessValue ?? this.businessValue,
-      updates.technicalRequirements ?? this.technicalRequirements,
-      updates.dependencies ?? this.dependencies,
       updates.isActive ?? this.isActive,
-      updates.complexity ?? this.complexity,
-      updates.estimatedEffort ?? this.estimatedEffort,
       this.createdAt,
       new Date()
     );

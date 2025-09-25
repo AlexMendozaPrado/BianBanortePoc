@@ -1,60 +1,67 @@
 import { CapabilityId } from '../value-objects/CapabilityId';
-import { CategoryType } from '../value-objects/CategoryType';
-import { SubCapability } from './SubCapability';
+import { BusinessCapability } from './BusinessCapability';
 
 /**
- * Entidad principal que representa una Capacidad empresarial BIAN
+ * Entidad que representa una Capacidad (segundo nivel en la jerarquía)
+ * Ahora contiene capacidades empresariales en lugar de subcapacidades directamente
  */
 export class Capability {
   constructor(
     public readonly id: CapabilityId,
     public readonly name: string,
-    public readonly description: string,
-    public readonly category: CategoryType,
-    public readonly subCapabilities: SubCapability[] = [],
+    public readonly groupId: string,
+    public readonly businessCapabilities: BusinessCapability[] = [],
     public readonly isActive: boolean = true,
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date()
   ) {}
 
   /**
-   * Obtiene todas las funcionalidades de esta capacidad
+   * Verifica si la capacidad tiene capacidades empresariales
    */
-  getAllFunctionalities() {
-    return this.subCapabilities.flatMap(sub => sub.functionalities);
+  hasBusinessCapabilities(): boolean {
+    return this.businessCapabilities.length > 0;
   }
 
   /**
-   * Busca una subcapacidad por ID
+   * Verifica si la capacidad puede ser activada
    */
-  findSubCapability(id: string): SubCapability | undefined {
-    return this.subCapabilities.find(sub => sub.id === id);
+  canBeActivated(): boolean {
+    return this.hasBusinessCapabilities() && this.isActive;
   }
 
   /**
-   * Verifica si la capacidad contiene una funcionalidad específica
+   * Verifica si está completamente configurada
    */
-  hasFunctionality(functionalityId: string): boolean {
-    return this.getAllFunctionalities().some(func => func.id === functionalityId);
+  isCompletelyConfigured(): boolean {
+    return this.hasBusinessCapabilities() && this.businessCapabilities.every(bc => bc.isActive);
   }
 
   /**
-   * Obtiene el número total de funcionalidades
+   * Obtiene el total de capacidades empresariales
+   */
+  getTotalBusinessCapabilities(): number {
+    return this.businessCapabilities.length;
+  }
+
+  /**
+   * Obtiene el total de funcionalidades sumando todas las subcapacidades de todas las capacidades empresariales
    */
   getTotalFunctionalities(): number {
-    return this.getAllFunctionalities().length;
+    return this.businessCapabilities.reduce((total, businessCap) => {
+      return total + businessCap.subCapabilities.length;
+    }, 0);
   }
 
   /**
    * Crea una copia de la capacidad con nuevos valores
    */
-  update(updates: Partial<Pick<Capability, 'name' | 'description' | 'category' | 'isActive'>>): Capability {
+  update(updates: Partial<Pick<Capability, 'name' | 'isActive'>>): Capability {
     return new Capability(
       this.id,
       updates.name ?? this.name,
-      updates.description ?? this.description,
-      updates.category ?? this.category,
-      this.subCapabilities,
+      this.groupId,
+      this.businessCapabilities,
       updates.isActive ?? this.isActive,
       this.createdAt,
       new Date()

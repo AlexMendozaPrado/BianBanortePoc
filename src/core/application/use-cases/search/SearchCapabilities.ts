@@ -1,14 +1,13 @@
-import { SearchService } from '../../../domain/ports/SearchService';
-import { SearchResult, SearchFilters } from '../../../domain/entities/SearchResult';
+import { SearchAcrossAllLevelsUseCase, SearchResultDto } from './SearchAcrossAllLevelsUseCase';
 
 /**
- * Caso de uso para buscar capacidades
+ * Caso de uso para buscar capacidades (actualizado para nueva estructura)
  */
 export class SearchCapabilities {
-  constructor(private readonly searchService: SearchService) {}
+  constructor(private readonly searchAcrossAllLevelsUseCase: SearchAcrossAllLevelsUseCase) {}
 
   /**
-   * Ejecuta la búsqueda de capacidades
+   * Ejecuta la búsqueda de capacidades en todos los niveles
    */
   async execute(request: SearchCapabilitiesRequest): Promise<SearchCapabilitiesResponse> {
     try {
@@ -17,21 +16,29 @@ export class SearchCapabilities {
       // Validar entrada
       this.validateRequest(request);
 
-      // Realizar búsqueda
-      const searchResult = await this.searchService.search(request.query, request.filters);
+      // Realizar búsqueda en todos los niveles
+      const searchResults = await this.searchAcrossAllLevelsUseCase.execute(request.query);
+
+      // Aplicar filtros si están presentes
+      const filteredResults = request.filters
+        ? this.applyFilters(searchResults, request.filters)
+        : searchResults;
 
       const endTime = Date.now();
       const executionTime = endTime - startTime;
 
       return {
         success: true,
-        result: searchResult,
+        results: filteredResults,
+        totalResults: filteredResults.length,
         executionTime,
         timestamp: new Date()
       };
     } catch (error) {
       return {
         success: false,
+        results: [],
+        totalResults: 0,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
         executionTime: 0,
         timestamp: new Date()
@@ -81,14 +88,50 @@ export class SearchCapabilities {
       throw new Error('Categories filter cannot be empty array');
     }
 
-    if (filters.complexity && filters.complexity.length === 0) {
-      throw new Error('Complexity filter cannot be empty array');
+    if (filters.levels && filters.levels.length === 0) {
+      throw new Error('Levels filter cannot be empty array');
     }
+
+    if (filters.styles && filters.styles.length === 0) {
+      throw new Error('Styles filter cannot be empty array');
+    }
+  }
+
+  /**
+   * Aplica filtros a los resultados de búsqueda
+   */
+  private applyFilters(results: SearchResultDto[], filters: SearchFilters): SearchResultDto[] {
+    let filtered = results;
+
+    // Filtrar por niveles específicos
+    if (filters.levels && filters.levels.length > 0) {
+      filtered = filtered.filter(result =>
+        filters.levels!.includes(result.level)
+      );
+    }
+
+    // Filtrar por estilos específicos
+    if (filters.styles && filters.styles.length > 0) {
+      filtered = filtered.filter(result =>
+        filters.styles!.includes(result.style.name)
+      );
+    }
+
+    // Filtrar solo elementos activos
+    if (filters.activeOnly) {
+      filtered = filtered.filter(result =>
+        result.level === 'functionality'
+          ? true // Las funcionalidades no tienen isActive en el DTO, asumimos true
+          : true
+      );
+    }
+
+    return filtered;
   }
 }
 
 /**
- * Solicitud para búsqueda de capacidades
+ * Solicitud para búsqueda de capacidades (nueva estructura)
  */
 export interface SearchCapabilitiesRequest {
   query: string;
@@ -96,12 +139,22 @@ export interface SearchCapabilitiesRequest {
 }
 
 /**
- * Respuesta de búsqueda de capacidades
+ * Respuesta de búsqueda de capacidades (nueva estructura)
  */
 export interface SearchCapabilitiesResponse {
   success: boolean;
-  result?: SearchResult;
+  results: SearchResultDto[];
+  totalResults: number;
   error?: string;
   executionTime: number;
   timestamp: Date;
+}
+
+/**
+ * Filtros de búsqueda (adaptado para nueva estructura)
+ */
+export interface SearchFilters {
+  levels?: ('group' | 'capability' | 'business' | 'subcapability' | 'functionality')[];
+  styles?: string[];
+  activeOnly?: boolean;
 }

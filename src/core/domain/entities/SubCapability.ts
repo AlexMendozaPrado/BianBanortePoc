@@ -8,7 +8,7 @@ export class SubCapability {
     public readonly id: string,
     public readonly name: string,
     public readonly description: string,
-    public readonly capabilityId: string,
+    public readonly businessCapabilityId: string,
     public readonly functionalities: Functionality[] = [],
     public readonly isActive: boolean = true,
     public readonly createdAt: Date = new Date(),
@@ -16,17 +16,17 @@ export class SubCapability {
   ) {}
 
   /**
-   * Busca una funcionalidad por ID
+   * Verifica si la subcapacidad puede ser activada
    */
-  findFunctionality(id: string): Functionality | undefined {
-    return this.functionalities.find(func => func.id === id);
+  canBeActivated(): boolean {
+    return this.hasFunctionalities() && this.isActive;
   }
 
   /**
-   * Obtiene el número de funcionalidades activas
+   * Verifica si está lista para implementación
    */
-  getActiveFunctionalities(): Functionality[] {
-    return this.functionalities.filter(func => func.isActive);
+  isReadyForImplementation(): boolean {
+    return this.isActive && this.hasFunctionalities() && this.description.length > 5;
   }
 
   /**
@@ -44,7 +44,7 @@ export class SubCapability {
       this.id,
       updates.name ?? this.name,
       updates.description ?? this.description,
-      this.capabilityId,
+      this.businessCapabilityId,
       this.functionalities,
       updates.isActive ?? this.isActive,
       this.createdAt,

@@ -1,12 +1,18 @@
 import { CapabilityRepository } from '../../../domain/ports/CapabilityRepository';
+import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroupRepository';
 import { CapabilityId } from '../../../domain/value-objects/CapabilityId';
 import { Capability } from '../../../domain/entities/Capability';
+import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
+import { BusinessCapability } from '../../../domain/entities/BusinessCapability';
 
 /**
- * Caso de uso para obtener detalles de una capacidad específica
+ * Caso de uso para obtener detalles de una capacidad específica con nueva estructura de 5 niveles
  */
 export class GetCapabilityDetails {
-  constructor(private readonly capabilityRepository: CapabilityRepository) {}
+  constructor(
+    private readonly capabilityRepository: CapabilityRepository,
+    private readonly capabilityGroupRepository: CapabilityGroupRepository
+  ) {}
 
   /**
    * Ejecuta la obtención de detalles de capacidad
@@ -30,12 +36,24 @@ export class GetCapabilityDetails {
         };
       }
 
-      // Obtener información adicional
-      const additionalInfo = await this.getAdditionalInfo(capability);
+      // Buscar el grupo al que pertenece la capacidad
+      const group = await this.capabilityGroupRepository.findById(capability.groupId);
+
+      if (!group) {
+        return {
+          success: false,
+          error: `Group for capability ${request.capabilityId} not found`,
+          timestamp: new Date()
+        };
+      }
+
+      // Obtener información adicional con contexto de grupo
+      const additionalInfo = await this.getAdditionalInfo(capability, group);
 
       return {
         success: true,
         capability,
+        group,
         additionalInfo,
         timestamp: new Date()
       };
@@ -62,61 +80,82 @@ export class GetCapabilityDetails {
   }
 
   /**
-   * Obtiene información adicional sobre la capacidad
+   * Obtiene información adicional sobre la capacidad con nueva estructura
    */
-  private async getAdditionalInfo(capability: Capability): Promise<CapabilityAdditionalInfo> {
+  private async getAdditionalInfo(capability: Capability, group: CapabilityGroup): Promise<CapabilityAdditionalInfo> {
     const totalFunctionalities = capability.getTotalFunctionalities();
-    const activeSubCapabilities = capability.subCapabilities.filter(sub => sub.isActive);
+    const totalBusinessCapabilities = capability.getTotalBusinessCapabilities();
+    const activeSubCapabilities = capability.getAllSubCapabilities().filter(sub => sub.isActive);
     const activeFunctionalities = capability.getAllFunctionalities().filter(func => func.isActive);
 
-    // Calcular estadísticas de complejidad
-    const complexityStats = this.calculateComplexityStats(capability);
-
-    // Calcular esfuerzo total estimado
-    const totalEstimatedEffort = capability.getAllFunctionalities()
-      .reduce((total, func) => total + func.estimatedEffort, 0);
+    // Calcular estadísticas por capacidad empresarial
+    const businessCapabilityStats = this.calculateBusinessCapabilityStats(capability);
 
     return {
       totalFunctionalities,
+      totalBusinessCapabilities,
       activeSubCapabilities: activeSubCapabilities.length,
       activeFunctionalities: activeFunctionalities.length,
-      complexityStats,
-      totalEstimatedEffort,
+      businessCapabilityStats,
       lastUpdated: capability.updatedAt,
-      hasDocumentation: capability.description.length > 100, // Heurística simple
-      dependencies: this.extractDependencies(capability)
+      groupInfo: {
+        id: group.id,
+        name: group.name,
+        style: group.style.getValue(),
+        styleColor: group.style.getColor()
+      },
+      hierarchyPath: this.buildHierarchyPath(capability, group),
+      hasDocumentation: capability.businessCapabilities.some(bc => bc.description.length > 10)
     };
   }
 
   /**
-   * Calcula estadísticas de complejidad
+   * Calcula estadísticas por capacidad empresarial
    */
-  private calculateComplexityStats(capability: Capability): ComplexityStats {
-    const functionalities = capability.getAllFunctionalities();
-    const total = functionalities.length;
-
-    if (total === 0) {
-      return { low: 0, medium: 0, high: 0, total: 0 };
-    }
-
-    const low = functionalities.filter(f => f.complexity === 'Low').length;
-    const medium = functionalities.filter(f => f.complexity === 'Medium').length;
-    const high = functionalities.filter(f => f.complexity === 'High').length;
-
-    return { low, medium, high, total };
+  private calculateBusinessCapabilityStats(capability: Capability): BusinessCapabilityStats[] {
+    return capability.businessCapabilities.map(businessCap => ({
+      id: businessCap.id,
+      name: businessCap.name,
+      description: businessCap.description,
+      subCapabilityCount: businessCap.subCapabilities.length,
+      functionalityCount: businessCap.getAllFunctionalities().length,
+      activeFunctionalityCount: businessCap.getAllFunctionalities().filter(f => f.isActive).length,
+      isComplete: businessCap.isReadyForProduction()
+    }));
   }
 
   /**
-   * Extrae dependencias de la capacidad
+   * Construye el path jerárquico de la capacidad
    */
-  private extractDependencies(capability: Capability): string[] {
-    const dependencies = new Set<string>();
-
-    capability.getAllFunctionalities().forEach(func => {
-      func.dependencies.forEach(dep => dependencies.add(dep));
-    });
-
-    return Array.from(dependencies);
+  private buildHierarchyPath(capability: Capability, group: CapabilityGroup): HierarchyPath {
+    return {
+      group: {
+        id: group.id,
+        name: group.name,
+        level: 1
+      },
+      capability: {
+        id: capability.id.getValue(),
+        name: capability.name,
+        level: 2
+      },
+      businessCapabilities: capability.businessCapabilities.map(bc => ({
+        id: bc.id,
+        name: bc.name,
+        level: 3,
+        subCapabilities: bc.subCapabilities.map(sub => ({
+          id: sub.id,
+          name: sub.name,
+          level: 4,
+          functionalities: sub.functionalities.map(func => ({
+            id: func.id,
+            name: func.name,
+            level: 5,
+            isActive: func.isActive
+          }))
+        }))
+      }))
+    };
   }
 }
 
@@ -128,36 +167,83 @@ export interface GetCapabilityDetailsRequest {
 }
 
 /**
- * Respuesta con detalles de capacidad
+ * Respuesta con detalles de capacidad (nueva estructura)
  */
 export interface GetCapabilityDetailsResponse {
   success: boolean;
   capability?: Capability;
+  group?: CapabilityGroup;
   additionalInfo?: CapabilityAdditionalInfo;
   error?: string;
   timestamp: Date;
 }
 
 /**
- * Información adicional sobre la capacidad
+ * Información adicional sobre la capacidad (nueva estructura)
  */
 export interface CapabilityAdditionalInfo {
   totalFunctionalities: number;
+  totalBusinessCapabilities: number;
   activeSubCapabilities: number;
   activeFunctionalities: number;
-  complexityStats: ComplexityStats;
-  totalEstimatedEffort: number;
+  businessCapabilityStats: BusinessCapabilityStats[];
   lastUpdated: Date;
+  groupInfo: GroupInfo;
+  hierarchyPath: HierarchyPath;
   hasDocumentation: boolean;
-  dependencies: string[];
 }
 
 /**
- * Estadísticas de complejidad
+ * Estadísticas de capacidad empresarial
  */
-export interface ComplexityStats {
-  low: number;
-  medium: number;
-  high: number;
-  total: number;
+export interface BusinessCapabilityStats {
+  id: string;
+  name: string;
+  description: string;
+  subCapabilityCount: number;
+  functionalityCount: number;
+  activeFunctionalityCount: number;
+  isComplete: boolean;
+}
+
+/**
+ * Información del grupo
+ */
+export interface GroupInfo {
+  id: string;
+  name: string;
+  style: string;
+  styleColor: string;
+}
+
+/**
+ * Path jerárquico completo
+ */
+export interface HierarchyPath {
+  group: {
+    id: string;
+    name: string;
+    level: number;
+  };
+  capability: {
+    id: string;
+    name: string;
+    level: number;
+  };
+  businessCapabilities: {
+    id: string;
+    name: string;
+    level: number;
+    subCapabilities: {
+      id: string;
+      name: string;
+      level: number;
+      functionalities: {
+        id: string;
+        name: string;
+        level: number;
+        isActive: boolean;
+      }[];
+    }[];
+  }[];
 }

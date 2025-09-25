@@ -1,104 +1,49 @@
 import { CapabilityRepository, CapabilityFilters, PaginatedResult } from '../../core/domain/ports/CapabilityRepository';
 import { Capability } from '../../core/domain/entities/Capability';
-import { SubCapability } from '../../core/domain/entities/SubCapability';
-import { Functionality } from '../../core/domain/entities/Functionality';
 import { CapabilityId } from '../../core/domain/value-objects/CapabilityId';
-import { FunctionalityId } from '../../core/domain/value-objects/FunctionalityId';
-import { CategoryType } from '../../core/domain/value-objects/CategoryType';
-import bianData from '../data/bian-data.json';
+import { StyleType } from '../../core/domain/value-objects/StyleType';
+import { JsonCapabilityGroupRepository } from './JsonCapabilityGroupRepository';
 
 /**
  * Implementación del repositorio de capacidades usando datos JSON
+ * Ahora extrae las capacidades desde los grupos de capacidades
  */
 export class JsonCapabilityRepository implements CapabilityRepository {
   private capabilities: Capability[] = [];
+  private groupRepository: JsonCapabilityGroupRepository;
 
   constructor() {
+    this.groupRepository = new JsonCapabilityGroupRepository();
     this.loadData();
   }
 
   /**
-   * Carga los datos desde el archivo JSON
+   * Carga las capacidades desde los grupos
    */
-  private loadData(): void {
+  private async loadData(): Promise<void> {
     try {
-      this.capabilities = bianData.capabilities.map(capData => this.mapToCapability(capData));
+      const groups = await this.groupRepository.findAll();
+      this.capabilities = groups.flatMap(group => group.capabilities);
     } catch (error) {
-      console.error('Error loading BIAN data:', error);
+      console.error('Error loading capabilities from groups:', error);
       this.capabilities = [];
     }
   }
 
   /**
-   * Mapea datos JSON a entidad Capability
+   * Recarga las capacidades desde los grupos (útil si los datos cambian)
    */
-  private mapToCapability(data: any): Capability {
-    const capabilityId = new CapabilityId(data.id);
-    const category = new CategoryType(data.category);
-    
-    const subCapabilities = data.subCapabilities?.map((subData: any) => 
-      this.mapToSubCapability(subData)
-    ) || [];
-
-    return new Capability(
-      capabilityId,
-      data.name,
-      data.description,
-      category,
-      subCapabilities,
-      data.isActive ?? true,
-      new Date(data.createdAt || Date.now()),
-      new Date(data.updatedAt || Date.now())
-    );
-  }
-
-  /**
-   * Mapea datos JSON a entidad SubCapability
-   */
-  private mapToSubCapability(data: any): SubCapability {
-    const functionalities = data.functionalities?.map((funcData: any) => 
-      this.mapToFunctionality(funcData)
-    ) || [];
-
-    return new SubCapability(
-      data.id,
-      data.name,
-      data.description,
-      data.capabilityId,
-      functionalities,
-      data.isActive ?? true,
-      new Date(data.createdAt || Date.now()),
-      new Date(data.updatedAt || Date.now())
-    );
-  }
-
-  /**
-   * Mapea datos JSON a entidad Functionality
-   */
-  private mapToFunctionality(data: any): Functionality {
-    const functionalityId = new FunctionalityId(data.id);
-
-    return new Functionality(
-      functionalityId,
-      data.name,
-      data.description,
-      data.subCapabilityId,
-      data.capabilityId,
-      data.businessValue,
-      data.technicalRequirements || [],
-      data.dependencies || [],
-      data.isActive ?? true,
-      data.complexity || 'Medium',
-      data.estimatedEffort || 0,
-      new Date(data.createdAt || Date.now()),
-      new Date(data.updatedAt || Date.now())
-    );
+  private async reloadCapabilities(): Promise<void> {
+    await this.loadData();
   }
 
   /**
    * Obtiene todas las capacidades
    */
   async findAll(): Promise<Capability[]> {
+    if (this.capabilities.length === 0) {
+      await this.reloadCapabilities();
+    }
     return [...this.capabilities];
   }
 
@@ -106,15 +51,35 @@ export class JsonCapabilityRepository implements CapabilityRepository {
    * Busca una capacidad por ID
    */
   async findById(id: CapabilityId): Promise<Capability | null> {
+    if (this.capabilities.length === 0) {
+      await this.reloadCapabilities();
+    }
     const capability = this.capabilities.find(cap => cap.id.equals(id));
     return capability || null;
   }
 
   /**
-   * Busca capacidades por categoría
+   * Busca capacidades por grupo
    */
-  async findByCategory(category: CategoryType): Promise<Capability[]> {
-    return this.capabilities.filter(cap => cap.category.equals(category));
+  async findByGroupId(groupId: string): Promise<Capability[]> {
+    if (this.capabilities.length === 0) {
+      await this.reloadCapabilities();
+    }
+    return this.capabilities.filter(cap => cap.groupId === groupId);
+  }
+
+  /**
+   * Busca capacidades por estilo del grupo
+   */
+  async findByGroupStyle(style: StyleType): Promise<Capability[]> {
+    const groups = await this.groupRepository.findByStyle(style);
+    const groupIds = groups.map(group => group.id);
+
+    if (this.capabilities.length === 0) {
+      await this.reloadCapabilities();
+    }
+
+    return this.capabilities.filter(cap => groupIds.includes(cap.groupId));
   }
 
   /**
@@ -157,13 +122,27 @@ export class JsonCapabilityRepository implements CapabilityRepository {
    * Obtiene capacidades con filtros avanzados
    */
   async findWithFilters(filters: CapabilityFilters): Promise<Capability[]> {
+    if (this.capabilities.length === 0) {
+      await this.reloadCapabilities();
+    }
+
     let result = [...this.capabilities];
 
-    // Filtrar por categorías
-    if (filters.categories && filters.categories.length > 0) {
-      result = result.filter(cap => 
-        filters.categories!.some(category => cap.category.equals(category))
+    // Filtrar por grupos específicos
+    if (filters.groupIds && filters.groupIds.length > 0) {
+      result = result.filter(cap =>
+        filters.groupIds!.includes(cap.groupId)
       );
+    }
+
+    // Filtrar por estilos de grupo
+    if (filters.groupStyles && filters.groupStyles.length > 0) {
+      const groups = await this.groupRepository.findAll();
+      const matchingGroupIds = groups
+        .filter(group => filters.groupStyles!.some(style => group.style.equals(style)))
+        .map(group => group.id);
+
+      result = result.filter(cap => matchingGroupIds.includes(cap.groupId));
     }
 
     // Filtrar por estado activo
@@ -171,23 +150,37 @@ export class JsonCapabilityRepository implements CapabilityRepository {
       result = result.filter(cap => cap.isActive === filters.isActive);
     }
 
-    // Filtrar por presencia de subcapacidades
-    if (filters.hasSubCapabilities !== undefined) {
-      result = result.filter(cap => 
-        (cap.subCapabilities.length > 0) === filters.hasSubCapabilities
+    // Filtrar por presencia de capacidades empresariales
+    if (filters.hasBusinessCapabilities !== undefined) {
+      result = result.filter(cap =>
+        cap.hasBusinessCapabilities() === filters.hasBusinessCapabilities
+      );
+    }
+
+    // Filtrar por número mínimo de capacidades empresariales
+    if (filters.minBusinessCapabilities !== undefined) {
+      result = result.filter(cap =>
+        cap.getTotalBusinessCapabilities() >= filters.minBusinessCapabilities!
+      );
+    }
+
+    // Filtrar por número máximo de capacidades empresariales
+    if (filters.maxBusinessCapabilities !== undefined) {
+      result = result.filter(cap =>
+        cap.getTotalBusinessCapabilities() <= filters.maxBusinessCapabilities!
       );
     }
 
     // Filtrar por número mínimo de funcionalidades
     if (filters.minFunctionalities !== undefined) {
-      result = result.filter(cap => 
+      result = result.filter(cap =>
         cap.getTotalFunctionalities() >= filters.minFunctionalities!
       );
     }
 
     // Filtrar por número máximo de funcionalidades
     if (filters.maxFunctionalities !== undefined) {
-      result = result.filter(cap => 
+      result = result.filter(cap =>
         cap.getTotalFunctionalities() <= filters.maxFunctionalities!
       );
     }
@@ -195,9 +188,8 @@ export class JsonCapabilityRepository implements CapabilityRepository {
     // Filtrar por término de búsqueda
     if (filters.searchTerm) {
       const searchTerm = filters.searchTerm.toLowerCase();
-      result = result.filter(cap => 
-        cap.name.toLowerCase().includes(searchTerm) ||
-        cap.description.toLowerCase().includes(searchTerm)
+      result = result.filter(cap =>
+        cap.name.toLowerCase().includes(searchTerm)
       );
     }
 

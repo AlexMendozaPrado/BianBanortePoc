@@ -1,144 +1,1896 @@
 {
-  "capabilities": [
-    {
-      "id": "CE-01",
-      "name": "Customer Relationship Management",
-      "description": "Gestión integral de las relaciones con clientes, incluyendo el ciclo de vida completo desde la prospección hasta el mantenimiento de la relación a largo plazo.",
-      "category": "CE",
-      "isActive": true,
-      "subCapabilities": [
-        {
-          "id": "CE-01-01",
-          "name": "Customer Acquisition",
-          "description": "Procesos para adquirir nuevos clientes",
-          "capabilityId": "CE-01",
-          "isActive": true,
-          "functionalities": [
-            {
-              "id": "func_ce_01_01_001",
-              "name": "Lead Generation",
-              "description": "Generación de prospectos de clientes potenciales",
-              "subCapabilityId": "CE-01-01",
-              "capabilityId": "CE-01",
-              "businessValue": "Incrementa la base de clientes potenciales",
-              "technicalRequirements": ["CRM System", "Marketing Automation"],
-              "dependencies": ["MK-01"],
-              "isActive": true,
-              "complexity": "Medium",
-              "estimatedEffort": 40
-            },
-            {
-              "id": "func_ce_01_01_002",
-              "name": "Customer Onboarding",
-              "description": "Proceso de incorporación de nuevos clientes",
-              "subCapabilityId": "CE-01-01",
-              "capabilityId": "CE-01",
-              "businessValue": "Mejora la experiencia inicial del cliente",
-              "technicalRequirements": ["Digital Forms", "Document Management"],
-              "dependencies": ["CM-01"],
-              "isActive": true,
-              "complexity": "High",
-              "estimatedEffort": 60
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "PD-01",
-      "name": "Product Design & Development",
-      "description": "Diseño y desarrollo de productos financieros innovadores que satisfagan las necesidades del mercado y cumplan con los requisitos regulatorios.",
-      "category": "PD",
-      "isActive": true,
-      "subCapabilities": [
-        {
-          "id": "PD-01-01",
-          "name": "Product Innovation",
-          "description": "Innovación en productos financieros",
-          "capabilityId": "PD-01",
-          "isActive": true,
-          "functionalities": [
-            {
-              "id": "func_pd_01_01_001",
-              "name": "Market Research",
-              "description": "Investigación de mercado para nuevos productos",
-              "subCapabilityId": "PD-01-01",
-              "capabilityId": "PD-01",
-              "businessValue": "Identifica oportunidades de mercado",
-              "technicalRequirements": ["Analytics Platform", "Survey Tools"],
-              "dependencies": ["MK-02"],
-              "isActive": true,
-              "complexity": "Medium",
-              "estimatedEffort": 35
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "OP-01",
-      "name": "Operations Management",
-      "description": "Gestión de operaciones bancarias diarias, incluyendo procesamiento de transacciones, gestión de efectivo y operaciones de back-office.",
-      "category": "OP",
-      "isActive": true,
-      "subCapabilities": [
-        {
-          "id": "OP-01-01",
-          "name": "Transaction Processing",
-          "description": "Procesamiento de transacciones bancarias",
-          "capabilityId": "OP-01",
-          "isActive": true,
-          "functionalities": [
-            {
-              "id": "func_op_01_01_001",
-              "name": "Payment Processing",
-              "description": "Procesamiento de pagos y transferencias",
-              "subCapabilityId": "OP-01-01",
-              "capabilityId": "OP-01",
-              "businessValue": "Facilita transacciones eficientes",
-              "technicalRequirements": ["Core Banking System", "Payment Gateway"],
-              "dependencies": ["PM-01", "SE-01"],
-              "isActive": true,
-              "complexity": "High",
-              "estimatedEffort": 80
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "categories": [
-    {
-      "code": "CE",
-      "description": "Customer Engagement",
-      "color": "#1976d2"
-    },
-    {
-      "code": "PD",
-      "description": "Product Development",
-      "color": "#388e3c"
-    },
-    {
-      "code": "OP",
-      "description": "Operations",
-      "color": "#f57c00"
-    },
-    {
-      "code": "RM",
-      "description": "Risk Management",
-      "color": "#d32f2f"
-    },
-    {
-      "code": "FM",
-      "description": "Financial Management",
-      "color": "#7b1fa2"
-    }
-  ],
-  "metadata": {
-    "version": "12.0.0",
-    "lastUpdated": "2024-01-15T00:00:00.000Z",
-    "totalCapabilities": 3,
-    "totalSubCapabilities": 3,
-    "totalFunctionalities": 3
-  }
-}
+"CEfuncionalidades":[
+	{
+		"Nombre":"Conocimiento del Cliente",
+		"estilo" : "success",
+		"capacidades":[
+		{
+			"Id":"CE-01",
+			"Nombre":"Conocimiento del Cliente",
+			"empresarial":[
+				{
+					"Id":"SCE-01-01",
+					"Nombre":"Información del Cliente",
+					"subcapacidad":[
+						{
+							"Id":"FN-01-01-001",
+							"Nombre": "Alta de Cliente",
+							"Descripcion":"Perfila al cliente acuerdo a la información proporcionada (ingresos, necesidad, inmueble, etc.) para  ofrecer ofertas de producto",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-01-001",
+									"Nombre":"Alta de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								},
+								{
+									"Id":"FN-01-01-002",
+									"Nombre":"Búsqueda de Clientes",
+									"Descripcion":"Confirma datos y existencia de una Afiliación"
+								},
+								{
+									"Id":"FN-01-01-003",
+									"Nombre":"Consulta de Habilitadores de Cliente",
+									"Descripcion":"Realiza la consulta de datos de cliente, como: nombre, datos de contacto, dirección, Razón Social, personalidad Jurídica, fecha de alta de cliente, sexo, edad, número del cliente, etc."
+								},
+								{
+									"Id":"FN-01-01-004",
+									"Nombre":"Actualización de Datos de Cliente",
+									"Descripcion":"Confirma la existencia de un cliente en BEM teniendo como dato de entrada el ID BEM del cliente"
+								},
+								{
+									"Id":"FN-01-01-005",
+									"Nombre":"Consulta de Datos de Cliente",
+									"Descripcion":"Valida y obtiene el segmento de un cliente"
+								},
+								{
+									"Id":"FN-01-01-006",
+									"Nombre":"Consulta de Servicios Contratados",
+									"Descripcion":"Realiza la búsqueda de un cliente por nombre en Chat Pyme Genesys"
+								},
+								{
+									"Id":"FN-01-01-007",
+									"Nombre":"Consulta de Relaciones de Cliente",
+									"Descripcion":"Realiza la búsqueda de un cliente en sistema Core de Casa de Bolsa (TAS)"
+								}
+							]
+						},
+						{
+							"Id":"FN-01-01-002",
+							"Nombre": "Búsqueda de Clientes",
+							"Descripcion":"Perfila al cliente acuerdo a la información proporcionada (ingresos, necesidad, inmueble, etc.) para  ofrecer ofertas de producto",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-02-001",
+									"Nombre":"Digitalización",
+									"Descripcion":"Realiza la consulta de los datos del ejecutivo / analista / usuario: ID de usuario, nombre, puesto, correo electrónico, etc."
+								},
+								{
+									"Id":"FN-01-02-002",
+									"Nombre":"Generación de Documentos",
+									"Descripcion":"Permite la búsqueda de cliente PM o PFAE por Empresa BEM o Numero SIC para validar Estatus BEM, Razón Social, SIC, Cuenta Cargo, RFC, Apoderados del BEM, correo, teléfono, dirección etc."
+								},
+								{
+									"Id":"FN-01-02-003",
+									"Nombre":"Consulta de Documentos",
+									"Descripcion":"Verifica que los datos del cliente sean consistentes entre Altamira y BEM Realiza la siguientes comparación de información:Razón Social, SIC, Cuenta Cargo BEM, RFC"
+								},
+								{
+									"Id":"FN-01-02-004",
+									"Nombre":"Búsqueda de Documentos",
+									"Descripcion":"Realiza la consulta de las personas relacionas al Cliente como Apoderdos Legales, Representantes Legales, etc."
+								},
+								{
+									"Id":"FN-01-02-005",
+									"Nombre":"Visualización de Documentos",
+									"Descripcion":"Búsqueda de empleados Banorte para que funjan como firmantes dentro de las solicitudes de mantenimiento"
+								},
+								{
+									"Id":"FN-01-02-006",
+									"Nombre":"Descarga de Documentos",
+									"Descripcion":"Realiza la consulta de los datos del comercio como domicilio, datos de contacto"
+								},
+								{
+									"Id":"FN-01-02-007",
+									"Nombre":"Extracción de Datos de Documentos",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-02-008",
+									"Nombre":"Validación de Documentos",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-02-009",
+									"Nombre":"Analítica de Documentos",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]								
+						},
+						{
+							"Id":"FN-01-01-003",
+							"Nombre": "Consulta de Habilitadores de Cliente",
+							"Descripcion":"Subcapacidad que integra funcionalidades para validar y certificar datos de un ciente mediante el uso de mecanismos de validación como medios de contacto, validación de datos en entidades externas",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-03-001",
+									"Nombre":"Agregar información a Analítica del cliente",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-03-002",
+									"Nombre":"Generación de Cuadros de Mando",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-03-003",
+									"Nombre":"Generación de Reportes",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-03-004",
+									"Nombre":"Consulta Inteligente de Información Analítica (IA)",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-03-005",
+									"Nombre":"Descarga de Información Analítica",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-03-006",
+									"Nombre":"Consulta de Información Analítica",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}								
+							]
+						},
+						{
+							"Id":"FN-01-01-004",
+							"Nombre": "Actualización de Datos de Cliente",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						},
+						{
+							"Id":"FN-01-01-005",
+							"Nombre": "Consulta de Datos de Cliente",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						}
+						,
+						{
+							"Id":"FN-01-01-006",
+							"Nombre": "Consulta de Servicios Contratados",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						},
+						{
+							"Id":"FN-01-01-007",
+							"Nombre": "Consulta de Relaciones de Cliente",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						},
+						{
+							"Id":"FN-01-01-008",
+							"Nombre": "Perfilamiento de Persona",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						},
+						{
+							"Id":"FN-01-01-009",
+							"Nombre": "Validación de datos de cliente",
+							"Descripcion":"desxcripcion hrvjenvjjnwehvn",
+							"funcionalidades":[
+								{
+									"Id":"FN-01-04-001",
+									"Nombre":"Consulta de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-002",
+									"Nombre":"Consulta de Información de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-003",
+									"Nombre":"Actualización de Catálogos Institucionales",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								},
+								{
+									"Id":"FN-01-04-004",
+									"Nombre":"Actualización de Documentos del GF Banorte",
+									"Descripcion":"Consulta información de la emisora: Nombre, Número de emisora, Correo"
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-01-02",
+					"Nombre":"Gestión Documental",
+					"Descripcion":"Capacidad que administra la captura y almacenamiento de biométricos, realiza la validación de datos proporcionados por el cliente para su autenticación.",
+					"subcapacidad":[
+						{
+							"Id":"FN-01-02-001",
+							"Nombre": "Digitalización",
+							"Descripcion":"Sub capacidad que gestiona factores de autenticación N1.Valida información obtenida mediante cuestionarios realizados a la persona, sobre información que la persona conoce.Valida al menos una de las respuestas proporcionadas por la persona. ",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-01-0010",
+									"Nombre":"Autenticación del Cliente (C1)",
+									"Descripcion":"Verifica la identidad de una persona mediante una recopilación de datos personales y la validación de estos datos en sistemas centrales"
+								},
+								{
+									"Id":"FN-02-01-0011",
+									"Nombre":"Autenticación del Cliente (C2)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-01-0012",
+									"Nombre":"Autenticación del Cliente (C3)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-01-0013",
+									"Nombre":"Autenticación del Cliente (C4)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-01-002",
+									"Nombre":"Autorización del Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-01-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Cliente (C4)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-002",
+							"Nombre": "Generación de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-003",
+							"Nombre": "Consulta de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-004",
+							"Nombre": "Búsqueda de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-005",
+							"Nombre": "Visualización de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-006",
+							"Nombre": "Descarga de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-007",
+							"Nombre": "Extracción de Datos de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-008",
+							"Nombre": "Validación de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-02-009",
+							"Nombre": "Analítica de Documentos",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-02-02-001",
+									"Nombre":"Autenticación de Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-002",
+									"Nombre":"Autorización del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-02-02-003",
+									"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						}
+
+					]
+				},
+				{
+					"Id":"SCE-01-03",
+					"Nombre":"Analítica del Cliente",
+					"Descripcion":"Capacidad que administra la captura y almacenamiento de biométricos, realiza la validación de datos proporcionados por el cliente para su autenticación.",
+					"subcapacidad":[
+						{
+							"Id":"FN-01-03-001",
+							"Nombre": "Agregar información a Analítica del cliente",
+							"Descripcion":"Sub capacidad que gestiona factores de autenticación N1.Valida información obtenida mediante cuestionarios realizados a la persona, sobre información que la persona conoce.Valida al menos una de las respuestas proporcionadas por la persona. ",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-01-001",
+									"Nombre":"Ejecución de Evaluación de Riesgo Crediticio del Cliente",
+									"Descripcion":"Verifica la identidad de una persona mediante una recopilación de datos personales y la validación de estos datos en sistemas centrales"
+								},
+								{
+									"Id":"FN-03-01-002",
+									"Nombre":"Consulta de Evaluación de Riesgo Crediticio del Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-01-003",
+									"Nombre":"Consulta de Antecedentes internos del cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-01-004",
+									"Nombre":"Actualización de Antecedentes Externos del Cliente (Buró de Crédito)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-01-005",
+									"Nombre":"Consulta de Antecedentes externos del cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-01-006",
+									"Nombre":"Solicititud de Autorización de Evaluación de Riesgos por facultados",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-03-002",
+							"Nombre": "Generación de Cuadros de Mando",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-02-001",
+									"Nombre":"Ejecución de Evaluación de Detección de Fraudes",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-02-002",
+									"Nombre":"Consulta de Evaluación de Resultados de Evaluación de Fraudes",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-03-003",
+							"Nombre": "Generación de Reportes",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-03-001",
+									"Nombre":"Ejecución de Evaluación de Prevención de Lavado de Dinero",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-03-002",
+									"Nombre":"Consulta de Resultado de Evaluación de PLD",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-03-004",
+							"Nombre": "Consulta Inteligente de Información Analítica (IA)",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-04-001",
+									"Nombre":"Evaluación de Listas Negras",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-03-005",
+							"Nombre": "Descarga de Información Analítica",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-05-001",
+									"Nombre":"Cálculo / Recalculo del Score PLD",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-05-002",
+									"Nombre":"Consulta de Score PLD",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-03-006",
+							"Nombre": "Consulta de Información Analítica",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-03-05-001",
+									"Nombre":"Cálculo / Recalculo del Score PLD",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-03-05-002",
+									"Nombre":"Consulta de Score PLD",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-01-04",
+					"Nombre":"Información del GF Banorte",
+					"Descripcion":"Capacidad que administra la captura y almacenamiento de biométricos, realiza la validación de datos proporcionados por el cliente para su autenticación.",
+					"subcapacidad":[
+						{
+							"Id":"FN-01-04-001",
+							"Nombre": "Consulta de Catálogos Institucionales",
+							"Descripcion":"Sub capacidad que gestiona factores de autenticación N1.Valida información obtenida mediante cuestionarios realizados a la persona, sobre información que la persona conoce.Valida al menos una de las respuestas proporcionadas por la persona. ",
+							"funcionalidades":[
+								{
+									"Id":"FN-04-01-01",
+									"Nombre":"Envío de Notificación",
+									"Descripcion":"Verifica la identidad de una persona mediante una recopilación de datos personales y la validación de estos datos en sistemas centrales"
+								},
+								{
+									"Id":"FN-04-01-02",
+									"Nombre":"Envío de Mensajes Doble Vía",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-04-01-03",
+									"Nombre":"Conversación con el Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-04-002",
+							"Nombre": "Consulta de Información de Documentos del GF Banorte",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-04-02-01",
+									"Nombre":"Registro Transaccional del Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-04-02-02",
+									"Nombre":"Registro de Navegación del Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-04-003",
+							"Nombre": "Actualización de Catálogos Institucionales",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-04-03-01",
+									"Nombre":"Envío de Encuestas de Satisfacción al Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-04-03-02",
+									"Nombre":"Registro de Experiencias del Cliente (RRSS)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						},
+						{
+							"Id":"FN-01-04-004",
+							"Nombre": "Actualización de Documentos del GF Banorte",
+							"Descripcion":"Administra factores de autenticación N2.Considera información que sólo el Usuario conoce e ingrese a través de un dispositivo de acceso, cómo por ejemplo contraseñas y números de identificación personal.",
+							"funcionalidades":[
+								{
+									"Id":"FN-04-03-01",
+									"Nombre":"Envío de Encuestas de Satisfacción al Cliente",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								},
+								{
+									"Id":"FN-04-03-02",
+									"Nombre":"Registro de Experiencias del Cliente (RRSS)",
+									"Descripcion":"Autentica a un cliente mediante preguntas de seguridad que el cliente definió previamente."
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+		]
+	},
+	{
+		"Nombre":"Seguridad del Cliente",
+		"estilo":"warning",
+		"capacidades":[
+		{
+			"Id":"CE-02",
+			"Nombre":"Seguridad del Cliente",	
+			"empresarial":[
+			{
+				"Id":"SCE-02-01",
+				"Nombre":"Enrolamiento y Autenticación del Cliente",
+				"Descripcion":"Capacidad que administra la generación de ofertas valor generales y personalizadas.Permite la generación de campañas personalizadas para cada cliente.Permite diseñar  productos a la medida para cada cliente, en la cual se pretende que de acuerdo a rentabilidad, lealtad y nivel de negocio que se tenga se puedan ajustar las características de rendimientos y costos de cada producto.",
+				"subcapacidad":[
+					{
+						"Id":"FN-02-01-001",
+						"Nombre":"Autenticación del Cliente (C1)",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-01-0011",
+						"Nombre":"Autenticación del Cliente (C2)",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-01-0012",
+						"Nombre":"Autenticación del Cliente (C3)",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-01-0013",
+						"Nombre":"Autenticación del Cliente (C4)",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-01-002",
+						"Nombre":"Autorización del Cliente",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-01-003",
+						"Nombre":"Enrolamiento en método de Autenticación del Cliente (C4)",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					}
+				]
+			},
+			{
+				"Id":"SCE-02-02",
+				"Nombre":"Autenticación del Colaborador",
+				"Descripcion":"Gestiona los mantenimientos solicitados a un producto contratado por el cliente Capacidad que gobierna los mantenimientos requeridos para un servicio o accesorio adicional al producto contratado.Esta capacidad provee información de productos y servicios contratados por el Cliente, así como el seguimiento de estatus de trámites.",
+				"subcapacidad":[
+					{
+						"Id":"FN-02-02-001",
+						"Nombre":"Autenticación de Colaborador",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-02-002",
+						"Nombre":"Autorización del Colaborador",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					},
+					{
+						"Id":"FN-02-02-003",
+						"Nombre":"Enrolamiento en método de Autenticación del Colaborador",
+						"funcionalidades":[
+							{
+								"Id":"FN-01.001",
+								"Nombre":"Búsqueda de Cliente",
+								"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+							}
+						]
+					}
+				]
+			}
+			]
+		}		
+		]
+	},
+	{
+		"Nombre":"Evaluación del Cliente",
+		"estilo":"danger",
+		"capacidades":[
+			{
+				"Id":"CE-03",
+				"Nombre":"Evaluación del Cliente",	
+				"empresarial":[
+				{
+					"Id":"SCE-03-01",
+					"Nombre":"Evaluación de Riesgo Crediticio",
+					"Descripcion":"Capacidad que administra la generación de ofertas valor generales y personalizadas.Permite la generación de campañas personalizadas para cada cliente.Permite diseñar  productos a la medida para cada cliente, en la cual se pretende que de acuerdo a rentabilidad, lealtad y nivel de negocio que se tenga se puedan ajustar las características de rendimientos y costos de cada producto.",
+					"subcapacidad":[
+						{
+							"Id":"FN-03-01-001",
+							"Nombre":"Ejecución de Evaluación de Riesgo Crediticio del Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-01-002",
+							"Nombre":"Consulta de Evaluación de Riesgo Crediticio del Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-01-003",
+							"Nombre":"Consulta de Antecedentes internos del cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-01-004",
+							"Nombre":"Actualización de Antecedentes Externos del Cliente (Buró de Crédito)",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-01-005",
+							"Nombre":"Consulta de Antecedentes externos del cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-01-006",
+							"Nombre":"Solicititud de Autorización de Evaluación de Riesgos por facultados",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-03-02",
+					"Nombre":"Evaluación de Fraudes",
+					"Descripcion":"Capacidad que administra el alta y la activación de servicios contratados por un cliente. Gestiona el alta y activación de servicios, es decir, medios adicionales contratado por un cliente.",
+					"subcapacidad":[
+						{
+							"Id":"FN-03-02-001",
+							"Nombre":"Ejecución de Evaluación de Detección de Fraudes",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-02-002",
+							"Nombre":"Consulta de Evaluación de Resultados de Evaluación de Fraudes",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-03-03",
+					"Nombre":"Evaluación de PLD",
+					"Descripcion":"Gestiona los mantenimientos solicitados a un producto contratado por el cliente Capacidad que gobierna los mantenimientos requeridos para un servicio o accesorio adicional al producto contratado.Esta capacidad provee información de productos y servicios contratados por el Cliente, así como el seguimiento de estatus de trámites.",
+					"subcapacidad":[
+						{
+							"Id":"FN-03-03-001",
+							"Nombre":"Ejecución de Evaluación de Prevención de Lavado de Dinero",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-03-002",
+							"Nombre":"Consulta de Resultado de Evaluación de PLD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-03-04",
+					"Nombre":"Evaluación de Listas Negras",
+					"Descripcion":"Administra funcionalidades para la cancelación de productos y servicios",
+					"subcapacidad":[
+						{
+							"Id":"FN-03-04-001",
+							"Nombre":"Evaluación de Listas Negras",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-03-05",
+					"Nombre":"Cálculo de Score PLD",
+					"Descripcion":"Administra funcionalidades para la cancelación de productos y servicios",
+					"subcapacidad":[
+						{
+							"Id":"FN-03-05-001",
+							"Nombre":"Cálculo / Recalculo del Score PLD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-03-05-002",
+							"Nombre":"Consulta de Score PLD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				}
+				]
+			}		
+			]
+	},
+	{
+		"Nombre":"Interacción con el Cliente",
+		"estilo":"info",
+		"capacidades":[
+			{
+				"Id":"CE-04",
+				"Nombre":"Interacción con el Cliente",	
+				"empresarial":[
+				{
+					"Id":"SCE-04-01",
+					"Nombre":"Comunicación con el Cliente",
+					"Descripcion":"Capacidad que administra la generación de ofertas valor generales y personalizadas.Permite la generación de campañas personalizadas para cada cliente.Permite diseñar  productos a la medida para cada cliente, en la cual se pretende que de acuerdo a rentabilidad, lealtad y nivel de negocio que se tenga se puedan ajustar las características de rendimientos y costos de cada producto.",
+					"subcapacidad":[
+						{
+							"Id":"FN-04-01-01",
+							"Nombre":"Envío de Notificación",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-04-01-02",
+							"Nombre":"Envío de Mensajes Doble Vía",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-04-01-03",
+							"Nombre":"Conversación con el Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-04-02",
+					"Nombre":"Comportamiento del Cliente",
+					"Descripcion":"Capacidad que administra el alta y la activación de servicios contratados por un cliente. Gestiona el alta y activación de servicios, es decir, medios adicionales contratado por un cliente.",
+					"subcapacidad":[
+						{
+							"Id":"FN-04-02-01",
+							"Nombre":"Registro Transaccional del Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-04-02-02",
+							"Nombre":"Registro de Navegación del Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				},
+				{
+					"Id":"SCE-04-03",
+					"Nombre":"Retroalimentación del Cliente",
+					"Descripcion":"Gestiona los mantenimientos solicitados a un producto contratado por el cliente Capacidad que gobierna los mantenimientos requeridos para un servicio o accesorio adicional al producto contratado.Esta capacidad provee información de productos y servicios contratados por el Cliente, así como el seguimiento de estatus de trámites.",
+					"subcapacidad":[
+						{
+							"Id":"FN-04-03-01",
+							"Nombre":"Envío de Encuestas de Satisfacción al Cliente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-04-03-02",
+							"Nombre":"Registro de Experiencias del Cliente (RRSS)",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				}
+				]
+			}		
+			]
+	},
+	{
+		"Nombre":"Aprovisionamiento",
+		"estilo":"light",
+		"capacidades":[
+			{
+				"Id":"CE-05",
+				"Nombre":"Aprovisionamiento",	
+				"empresarial":[
+				{
+					"Id":"SCE-05-01",
+					"Nombre":"Oferta de Servicios Financieros",
+					"Descripcion":"Capacidad que administra la generación de ofertas valor generales y personalizadas.Permite la generación de campañas personalizadas para cada cliente.Permite diseñar  productos a la medida para cada cliente, en la cual se pretende que de acuerdo a rentabilidad, lealtad y nivel de negocio que se tenga se puedan ajustar las características de rendimientos y costos de cada producto.",
+					"subcapacidad":[
+						{
+							"Id":"FN-05-01-001",
+							"Nombre":"Generación de oferta personalizada",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-002",
+							"Nombre":"Generación de oferta general",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-003",
+							"Nombre":"Simulador de ofertas generales",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-004",
+							"Nombre":"Simulador de ofertas personalizadas",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-005",
+							"Nombre":"Ficha de producto - servicio",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-006",
+							"Nombre":"Generación de precios personalizados",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-007",
+							"Nombre":"Calculadora de Ingresos",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-008",
+							"Nombre":"Alta de condiciones financieras",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-009",
+							"Nombre":"Carga de calculadora financiera",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-010",
+							"Nombre":"Generación de Campaña",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-01-011",
+							"Nombre":"Consulta de Campaña vigente",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+
+					]
+				},
+				{
+					"Id":"SCE-05-02",
+					"Nombre":"Contratación de Servicios Financieros",
+					"Descripcion":"Capacidad que administra el alta y la activación de servicios contratados por un cliente. Gestiona el alta y activación de servicios, es decir, medios adicionales contratado por un cliente.",
+					"subcapacidad":[
+						{
+							"Id":"FN-05-02-001",
+							"Nombre":"Alta de cuenta digital - N2",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-002",
+							"Nombre":"Alta de cuenta N4",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-003",
+							"Nombre":"Generación de plástico electrónico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-004",
+							"Nombre":"Alta de línea TDC",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-005",
+							"Nombre":"Alta de línea en sistema de cartera",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-006",
+							"Nombre":"Alta de crédito en sistema de Cartera",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-007",
+							"Nombre":"Alta de línea en Master de Líneas",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-008",
+							"Nombre":"Alta de grupo en Master de Líneas",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-009",
+							"Nombre":"Registro de Afiliación",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-010",
+							"Nombre":"Registro de dispositivo TPV",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-011",
+							"Nombre":"Validación de información de la afiliación",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-012",
+							"Nombre":"Solicitud de alta de Afiliación en PROSA",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-013",
+							"Nombre":"Validación de alta automática en aplicativos",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-014",
+							"Nombre":"Envío de contratos de producto por email",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-015",
+							"Nombre":"Activación de cuenta TDD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-016",
+							"Nombre":"Activación de promoción en TDC",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-017",
+							"Nombre":"Activación de promoción en TDD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-018",
+							"Nombre":"Alta de solicitud de servicio TDD Empresarial",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-019",
+							"Nombre":"Alta de plástico genérico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-020",
+							"Nombre":"Asignación de plástico nominativo",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-021",
+							"Nombre":"Registro de plásticos TDD a solicitar",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-022",
+							"Nombre":"Alta de TDD empresarial",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-023",
+							"Nombre":"Alta de TDD Empresarial adicional",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-024",
+							"Nombre":"Activación Banca en línea",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-025",
+							"Nombre":"Activación Banortel",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-026",
+							"Nombre":"Activación en Banca en línea empresarial",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-027",
+							"Nombre":"Alta de Chequera",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-028",
+							"Nombre":"Activación de Correspondencia",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-029",
+							"Nombre":"Activación de Alertas",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-030",
+							"Nombre":"Generación de Cheque protegido",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-031",
+							"Nombre":"Activación de envío de Estado de cuenta",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-032",
+							"Nombre":"Asignación de token físico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-033",
+							"Nombre":"Asociación de banca empresarial",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-034",
+							"Nombre":"Habilitación de micro sitio BEM",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-035",
+							"Nombre":"Activación de plástico TDC",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-036",
+							"Nombre":"Activación de plástico TDD",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-037",
+							"Nombre":"Generación de código de activación de plástico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-038",
+							"Nombre":"Habilitación de token celular",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-039",
+							"Nombre":"Activación de servicio CODI",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-040",
+							"Nombre":"Entrega de token físico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-041",
+							"Nombre":"Entrega de plástico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-042",
+							"Nombre":"Instalación de TPV´s",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-043",
+							"Nombre":"Instalación de aplicativo Conexión Banorte",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-044",
+							"Nombre":"Entrega de contrato de producto - físico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-045",
+							"Nombre":"Entrega de dispositivo FIDO (Fast Identity Online)",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-046",
+							"Nombre":"Entrega de Carta de liberación (Casa)",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-047",
+							"Nombre":"Entrega de Carta factura (Vehículo)",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-048",
+							"Nombre":"Entrega de chequera nominativa",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-049",
+							"Nombre":"Entrega de chequera genérica",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-050",
+							"Nombre":"Entrega de Contrato de servicio - email",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-051",
+							"Nombre":"Entrega de Contrato de servicio - físico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-052",
+							"Nombre":"Entrega de Póliza - email",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						},
+						{
+							"Id":"FN-05-02-053",
+							"Nombre":"Entrega de Póliza - físico",
+							"funcionalidades":[
+								{
+									"Id":"FN-01.001",
+									"Nombre":"Búsqueda de Cliente",
+									"Descripcion":"Valida la existencia de un cliente PF, PFAE, PM por distintos criterios de búsqueda: SIC, Nombre, No. Plástico, No. De cuenta, No. De crédito, RFC, CURP, Razón Social, Afiliación, folio de atención de aclaración."
+								}
+							]
+						}
+					]
+				}				
+				]
+			}		
+		]
+	}
+]}
