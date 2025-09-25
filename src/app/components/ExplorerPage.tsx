@@ -369,8 +369,7 @@ export function ExplorerPage() {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          marginLeft: sidebarOpen && !isMobile ? '280px' : 0,
-          transition: 'margin-left 0.3s ease',
+          marginLeft: 0,
         }}>
           {/* Área de búsqueda */}
           <SearchArea

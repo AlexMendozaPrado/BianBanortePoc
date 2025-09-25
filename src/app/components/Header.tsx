@@ -15,6 +15,7 @@ import {
   AccountCircle as AccountCircleIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
+import { BanorteLogo } from './ui/BanorteLogo';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -32,38 +33,15 @@ export function Header({ onMenuClick }: HeaderProps) {
       }}
     >
       <Toolbar sx={{ height: '64px', minHeight: '64px !important', padding: '0 24px' }}>
-        {/* Logo Banorte actualizado */}
+        {/* Logo Banorte */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-          <Box
-            sx={{
-              width: '120px',
-              height: '32px',
-              backgroundColor: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '4px',
-              color: '#EB0029',
-              fontFamily: 'Gotham',
-              fontWeight: 700,
-              fontSize: '1rem',
-            }}
-          >
-            BANORTE
-          </Box>
-
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              fontFamily: 'Gotham',
-              fontSize: '1.125rem',
-              fontWeight: 500,
-              color: 'white',
-            }}
-          >
-            BIAN Explorer
-          </Typography>
+          <BanorteLogo
+            variant="white"
+            height={60}
+            width={200}
+            useOfficialLogo={true}
+            className="mr-4"
+          />
         </Box>
 
         {/* Iconos de herramientas */}
