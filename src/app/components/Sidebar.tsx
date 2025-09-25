@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  ExpandMore as ExpandMoreIcon,
   ChevronRight as ChevronRightIcon,
   Folder as FolderIcon,
   FolderOpen as FolderOpenIcon,
@@ -19,12 +18,10 @@ import {
 } from '@mui/icons-material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import { Capability } from '../../core/domain/entities/Capability';
 import { CapabilityGroup } from '../../core/domain/entities/CapabilityGroup';
 
 interface SidebarProps {
   capabilityGroups: CapabilityGroup[];
-  selectedCapabilityId?: string;
   onCapabilitySelect: (capabilityId: string) => void;
   onSubCapabilitySelect: (capabilityId: string, subCapabilityId: string) => void;
   onFunctionalitySelect: (capabilityId: string, subCapabilityId: string, functionalityId: string) => void;
@@ -35,7 +32,6 @@ interface SidebarProps {
 
 export function Sidebar({
   capabilityGroups,
-  selectedCapabilityId,
   onCapabilitySelect,
   onSubCapabilitySelect,
   onFunctionalitySelect,
@@ -78,7 +74,7 @@ export function Sidebar({
     });
   }, [capabilityGroups, searchTerm]);
 
-  const handleSelect = (event: React.SyntheticEvent, nodeId: string) => {
+  const handleSelect = (_: React.SyntheticEvent, nodeId: string) => {
     const parts = nodeId.split('-');
 
     if (parts.includes('group')) {
@@ -97,7 +93,6 @@ export function Sidebar({
       // Capacidad empresarial seleccionada (ej: "group-0-cap-0-business-0")
       const groupIndex = parseInt(parts[1]);
       const capIndex = parseInt(parts[3]);
-      const businessIndex = parseInt(parts[5]);
       const group = capabilityGroups[groupIndex];
       if (group && group.capabilities[capIndex]) {
         const capability = group.capabilities[capIndex];
@@ -430,17 +425,38 @@ export function Sidebar({
               backgroundColor: 'white',
             },
           }}
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#CFD2D3',
+              },
+              '&:hover fieldset': {
+                borderColor: '#5B6670',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#EB0029',
+                borderWidth: '2px',
+              },
+              '&.Mui-focused': {
+                outline: 'none',
+              },
+            },
+            '& .MuiOutlinedInput-input': {
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            },
+          }}
         />
 
         {/* TreeView de navegación */}
         <SimpleTreeView
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
           expandedItems={expanded}
-          onExpandedItemsChange={(event, itemIds) => setExpanded(itemIds)}
+          onExpandedItemsChange={(_, itemIds) => setExpanded(itemIds)}
           onSelectedItemsChange={(event, itemId) => {
-            if (itemId) {
+            if (itemId && event) {
               handleSelect(event, itemId as string);
             }
           }}

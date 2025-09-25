@@ -91,7 +91,7 @@ export function SearchArea({
 
   return (
     <Box sx={{ p: 3, backgroundColor: 'white', borderBottom: '1px solid #EBF0F2' }}>
-      {/* Barra de búsqueda principal */}
+      {/* Barra de búsqueda principal - Actualizada con especificación oficial */}
       <TextField
         fullWidth
         placeholder="¿Qué capacidad BIAN necesitas hoy?"
@@ -104,13 +104,36 @@ export function SearchArea({
             </InputAdornment>
           ),
           sx: {
-            height: '50px',
-            borderRadius: '6px',
-            fontSize: '15px',
-            fontFamily: 'Gotham',
+            height: '45px', // Actualizado según especificación oficial
+            borderRadius: '4px', // Actualizado según especificación
+            fontSize: '1rem',
+            fontFamily: 'Roboto', // Contenido usa Roboto según especificación
           },
         }}
-        sx={{ mb: 2 }}
+        sx={{
+          mb: 2,
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#E5E7EB',
+            },
+            '&:hover fieldset': {
+              borderColor: '#5B6670',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#EB0029',
+              borderWidth: '2px',
+            },
+            '&.Mui-focused': {
+              outline: 'none',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          },
+        }}
       />
 
       {/* Filtros y controles */}
@@ -181,8 +204,15 @@ export function SearchArea({
             sx={{
               ml: 1,
               height: '32px',
-              fontSize: '13px',
+              fontSize: '0.75rem', // Actualizado según especificación
               textTransform: 'none',
+              fontFamily: 'Gotham', // Botones usan Gotham
+              borderColor: '#EB0029',
+              color: '#EB0029',
+              '&:hover': {
+                borderColor: '#E30028',
+                backgroundColor: 'rgba(235, 0, 41, 0.04)',
+              },
             }}
           >
             Filtros avanzados
@@ -196,9 +226,13 @@ export function SearchArea({
               onClick={handleClearFilters}
               sx={{
                 height: '32px',
-                fontSize: '13px',
+                fontSize: '0.75rem', // Actualizado según especificación
                 textTransform: 'none',
+                fontFamily: 'Gotham', // Botones usan Gotham
                 color: '#5B6670',
+                '&:hover': {
+                  backgroundColor: 'rgba(91, 102, 112, 0.04)',
+                },
               }}
             >
               Limpiar filtros

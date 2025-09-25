@@ -1,236 +1,288 @@
 'use client';
 
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
+
+// Colores oficiales de Banorte según especificación
+const banorteColors = {
+  primary: '#EB0029',        // Banorte Red
+  primaryHover: '#E30028',   // Banorte Red Hover
+  primaryLight: '#EBF0F2',   // Light Primary
+  surface1: '#FFFFFF',       // Surface 1
+  surface2: '#F8F9FA',       // Surface 2
+  textPrimary: '#323E48',    // Dark Gray
+  textSecondary: '#5B6670',  // Medium Gray
+  textDisabled: '#7B868C',   // Light Gray
+  success: '#6CC04A',        // Green
+  warning: '#FFA400',        // Orange
+  error: '#FF671B',          // Error Orange
+  borderDashed: '#D1D5DB',   // Dashed Border
+  borderLight: '#E5E7EB',    // Light Border
+};
 
 /**
  * Tema personalizado de Banorte para Material-UI
- * Basado en las especificaciones técnicas del Figma
+ * Actualizado según la Guía de Estilos Web Banorte Versión 1
  */
 export const banorteTheme = createTheme({
   palette: {
     primary: {
-      main: '#EB0029', // Rojo Banorte exacto
-      light: '#FF5252',
-      dark: '#E30028',
-      contrastText: '#FFFFFF',
+      main: banorteColors.primary,
+      dark: banorteColors.primaryHover,
+      light: banorteColors.primaryLight,
+      contrastText: banorteColors.surface1,
     },
     secondary: {
-      main: '#5B6670', // Gris secundario
-      light: '#A2A9AD',
-      dark: '#323E48',
-      contrastText: '#FFFFFF',
-    },
-    error: {
-      main: '#F44336',
-      light: '#E57373',
-      dark: '#D32F2F',
-    },
-    warning: {
-      main: '#FF9800',
-      light: '#FFB74D',
-      dark: '#F57C00',
-    },
-    info: {
-      main: '#2196F3',
-      light: '#64B5F6',
-      dark: '#1976D2',
+      main: banorteColors.textPrimary,
+      light: banorteColors.textSecondary,
+      dark: banorteColors.textPrimary,
+      contrastText: banorteColors.surface1,
     },
     success: {
-      main: '#4CAF50',
-      light: '#81C784',
-      dark: '#388E3C',
+      main: banorteColors.success,
     },
-    grey: {
-      50: '#F4F7F8',
-      100: '#EBF0F2',
-      200: '#CFD2D3',
-      300: '#A2A9AD',
-      400: '#5B6670',
-      500: '#323E48',
-      600: '#757575',
-      700: '#616161',
-      800: '#424242',
-      900: '#212121',
+    warning: {
+      main: banorteColors.warning,
+    },
+    error: {
+      main: banorteColors.error,
     },
     background: {
-      default: '#F4F7F8',
-      paper: '#FFFFFF',
+      default: banorteColors.surface2,
+      paper: banorteColors.surface1,
     },
     text: {
-      primary: '#212121',
-      secondary: '#757575',
+      primary: banorteColors.textPrimary,
+      secondary: banorteColors.textSecondary,
+      disabled: banorteColors.textDisabled,
     },
+    divider: banorteColors.borderLight,
   },
   typography: {
     fontFamily: [
-      '"Roboto"',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
+      'Gotham',
+      'Roboto',
       '"Helvetica Neue"',
       'Arial',
-      'sans-serif',
+      'sans-serif'
     ].join(','),
+
+    // Headers y elementos de UI usan Gotham
     h1: {
       fontFamily: 'Gotham',
-      fontWeight: 'bold',
+      fontWeight: 700,
       fontSize: '2.5rem',
       lineHeight: 1.2,
-      color: '#323E48',
+      color: banorteColors.textPrimary,
     },
     h2: {
       fontFamily: 'Gotham',
-      fontWeight: '600',
-      fontSize: '18px',
+      fontWeight: 600,
+      fontSize: '2rem',
       lineHeight: 1.3,
-      color: '#323E48',
+      color: banorteColors.textPrimary,
     },
     h3: {
-      fontSize: '1.75rem',
+      fontFamily: 'Gotham',
       fontWeight: 600,
+      fontSize: '1.5rem',
       lineHeight: 1.4,
-      color: '#323E48',
+      color: banorteColors.textPrimary,
     },
     h4: {
-      fontSize: '1.5rem',
-      fontWeight: 600,
+      fontFamily: 'Gotham',
+      fontWeight: 500,
+      fontSize: '1.25rem',
       lineHeight: 1.4,
-      color: '#323E48',
+      color: banorteColors.textPrimary,
     },
     h5: {
-      fontSize: '1.25rem',
-      fontWeight: 600,
+      fontFamily: 'Gotham',
+      fontWeight: 500,
+      fontSize: '1rem',
       lineHeight: 1.5,
-      color: '#323E48',
+      color: banorteColors.textPrimary,
     },
     h6: {
       fontFamily: 'Gotham',
-      fontSize: '18px',
-      fontWeight: 'medium',
-      lineHeight: 1.5,
-      color: '#323E48',
-    },
-    subtitle1: {
-      fontSize: '1rem',
-      fontWeight: 400,
-      lineHeight: 1.5,
-      color: '#5B6670',
-    },
-    button: {
-      fontFamily: 'Gotham',
-      fontWeight: '500',
-      textTransform: 'none',
-    },
-    subtitle2: {
-      fontSize: '0.875rem',
       fontWeight: 500,
+      fontSize: '0.875rem',
       lineHeight: 1.5,
-      color: '#757575',
+      color: banorteColors.textPrimary,
     },
+
+    // Contenido usa Roboto
     body1: {
+      fontFamily: 'Roboto',
       fontSize: '1rem',
-      fontWeight: 400,
       lineHeight: 1.6,
-      color: '#212121',
+      color: banorteColors.textSecondary,
     },
     body2: {
+      fontFamily: 'Roboto',
       fontSize: '0.875rem',
-      fontWeight: 400,
-      lineHeight: 1.6,
-      color: '#757575',
+      lineHeight: 1.5,
+      color: banorteColors.textSecondary,
     },
+
+    // Botones usan Gotham
     button: {
+      fontFamily: 'Gotham',
+      fontWeight: 500,
+      fontSize: '0.875rem',
+      textTransform: 'none',
+      letterSpacing: '0.02em',
+    },
+
+    subtitle1: {
+      fontFamily: 'Roboto',
+      fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: 1.5,
+      color: banorteColors.textSecondary,
+    },
+    subtitle2: {
+      fontFamily: 'Roboto',
       fontSize: '0.875rem',
       fontWeight: 500,
-      textTransform: 'none',
+      lineHeight: 1.5,
+      color: banorteColors.textSecondary,
     },
     caption: {
+      fontFamily: 'Roboto',
       fontSize: '0.75rem',
       fontWeight: 400,
       lineHeight: 1.4,
-      color: '#757575',
+      color: banorteColors.textSecondary,
     },
-  },
+  } as ThemeOptions['typography'],
   shape: {
-    borderRadius: 8,
+    borderRadius: 4, // Especificación oficial: 4px
   },
-  spacing: 8,
+
+  spacing: 8, // Sistema de spacing basado en múltiplos de 8px
+
   components: {
+    // Configuración global de botones
     MuiButton: {
       styleOverrides: {
         root: {
+          height: '45px', // Altura oficial para botones primarios
           borderRadius: '4px',
-          height: '45px',
           fontFamily: 'Gotham',
-          fontSize: '15px',
-          fontWeight: 'medium',
+          fontWeight: 500,
+          fontSize: '0.875rem',
           textTransform: 'none',
           boxShadow: 'none',
-        },
-        contained: {
-          backgroundColor: '#EB0029',
           '&:hover': {
-            backgroundColor: '#E30028',
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
           },
         },
-        outlined: {
-          borderColor: '#EB0029',
-          color: '#EB0029',
-          height: '40px',
-          fontFamily: 'Gotham',
-          fontSize: '15px',
-          textTransform: 'none',
+        containedPrimary: {
+          backgroundColor: banorteColors.primary,
+          color: banorteColors.surface1,
+          '&:hover': {
+            backgroundColor: banorteColors.primaryHover,
+          },
+          '&:disabled': {
+            backgroundColor: banorteColors.textDisabled,
+            color: banorteColors.surface1,
+          },
+        },
+        outlinedPrimary: {
+          borderColor: banorteColors.primary,
+          color: banorteColors.primary,
+          '&:hover': {
+            borderColor: banorteColors.primaryHover,
+            backgroundColor: 'rgba(235, 0, 41, 0.04)',
+          },
         },
       },
     },
+
+    // Configuración de campos de texto
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '4px',
+            '& fieldset': {
+              borderColor: banorteColors.borderLight,
+            },
+            '&:hover fieldset': {
+              borderColor: banorteColors.textSecondary,
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: banorteColors.primary,
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: banorteColors.textSecondary,
+            fontFamily: 'Roboto',
+            '&.Mui-focused': {
+              color: banorteColors.primary,
+            },
+          },
+        },
+      },
+    },
+
+    // Configuración de modales
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: '8px', // Modales usan 8px según especificación
+          maxWidth: '720px',   // Ancho oficial para modales
+          minHeight: '320px',  // Altura mínima oficial
+          padding: '32px',
+          boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.12)',
+        },
+      },
+    },
+
+    // Headers y navegación
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: banorteColors.surface1,
+          color: banorteColors.textPrimary,
+          boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.1)',
+          height: '64px',
+        },
+      },
+    },
+    // Configuración de Cards
     MuiCard: {
       styleOverrides: {
         root: {
           borderRadius: '8px',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16)',
-          border: '1px solid #CFD2D3',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.08)',
+          border: `1px solid ${banorteColors.borderLight}`,
           transition: 'all 0.2s ease',
-          cursor: 'pointer',
           '&:hover': {
-            boxShadow: '0 6px 12px rgba(0,0,0,0.2)',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
             transform: 'translateY(-2px)',
           },
         },
       },
     },
+
+    // Configuración de Chips
     MuiChip: {
       styleOverrides: {
         root: {
           fontFamily: 'Gotham',
-          fontSize: '13px',
+          fontSize: '0.75rem',
           height: '32px',
         },
       },
     },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '6px',
-            fontFamily: 'Gotham',
-          },
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#EB0029',
-          height: '63px',
-          boxShadow: 'none',
-        },
-      },
-    },
+
+    // Configuración de Drawers
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#F4F7F8',
-          borderRight: '1px solid #CFD2D3',
+          backgroundColor: banorteColors.surface2,
+          borderRight: `1px solid ${banorteColors.borderLight}`,
         },
       },
     },

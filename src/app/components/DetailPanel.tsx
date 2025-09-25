@@ -17,8 +17,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -55,12 +53,10 @@ export function DetailPanel({
   onClose,
   onAddToProject
 }: DetailPanelProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [expandedAccordion, setExpandedAccordion] = useState<string | false>(false);
 
   const handleAccordionChange = (panel: string) => (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     isExpanded: boolean
   ) => {
     setExpandedAccordion(isExpanded ? panel : false);
