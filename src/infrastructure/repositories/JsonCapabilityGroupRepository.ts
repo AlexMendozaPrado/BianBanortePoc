@@ -1,4 +1,4 @@
-import { CapabilityGroupRepository, CapabilityGroupFilters, PaginatedResult } from '../../core/domain/ports/CapabilityGroupRepository';
+import { CapabilityGroupRepository } from '../../core/domain/ports/CapabilityGroupRepository';
 import { CapabilityGroup } from '../../core/domain/entities/CapabilityGroup';
 import { Capability } from '../../core/domain/entities/Capability';
 import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';

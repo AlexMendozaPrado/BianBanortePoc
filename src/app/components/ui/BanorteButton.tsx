@@ -10,7 +10,7 @@ interface BanorteButtonProps extends Omit<ButtonProps, 'variant'> {
   fullWidth?: boolean;
 }
 
-const StyledBanorteButton = styled(Button)<BanorteButtonProps>(({ theme, variant }) => ({
+const StyledBanorteButton = styled(Button)<BanorteButtonProps>(({ variant }: { variant?: 'primary' | 'secondary' | 'outline' | 'text' }) => ({
   height: '45px',
   borderRadius: '4px',
   fontFamily: 'Gotham',

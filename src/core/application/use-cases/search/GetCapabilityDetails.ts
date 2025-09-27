@@ -3,7 +3,6 @@ import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroup
 import { CapabilityId } from '../../../domain/value-objects/CapabilityId';
 import { Capability } from '../../../domain/entities/Capability';
 import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
-import { BusinessCapability } from '../../../domain/entities/BusinessCapability';
 
 /**
  * Caso de uso para obtener detalles de una capacidad específica con nueva estructura de 5 niveles
@@ -135,7 +134,7 @@ export class GetCapabilityDetails {
         level: 1
       },
       capability: {
-        id: capability.id.getValue(),
+        id: capability.id.value,
         name: capability.name,
         level: 2
       },

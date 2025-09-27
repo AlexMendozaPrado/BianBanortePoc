@@ -14,7 +14,7 @@ interface BanorteLogoProps {
   href?: string; // Para hacer el logo clickeable
 }
 
-const LogoContainer = styled(Box)<{ clickable: boolean }>(({ theme, clickable }) => ({
+const LogoContainer = styled(Box)<{ clickable: boolean }>(({ clickable }) => ({
   display: 'flex',
   alignItems: 'center',
   cursor: clickable ? 'pointer' : 'default',
@@ -24,7 +24,7 @@ const LogoContainer = styled(Box)<{ clickable: boolean }>(({ theme, clickable })
   },
 }));
 
-const FallbackLogo = styled(Box)<{ variant: string; height: number }>(({ theme, variant, height }) => ({
+const FallbackLogo = styled(Box)<{ variant: string; height: number }>(({ variant, height }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

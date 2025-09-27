@@ -100,19 +100,22 @@ export class JsonCapabilityRepository implements CapabilityRepository {
   }
 
   /**
-   * Busca capacidades que contengan el texto en nombre o descripción
+   * Busca capacidades que contengan el texto en nombre o en sus capacidades empresariales
    */
   async search(query: string): Promise<Capability[]> {
     const searchTerm = query.toLowerCase();
-    return this.capabilities.filter(cap => 
+    return this.capabilities.filter(cap =>
       cap.name.toLowerCase().includes(searchTerm) ||
-      cap.description.toLowerCase().includes(searchTerm) ||
-      cap.subCapabilities.some(sub => 
-        sub.name.toLowerCase().includes(searchTerm) ||
-        sub.description.toLowerCase().includes(searchTerm) ||
-        sub.functionalities.some(func => 
-          func.name.toLowerCase().includes(searchTerm) ||
-          func.description.toLowerCase().includes(searchTerm)
+      cap.businessCapabilities.some(bc =>
+        bc.name.toLowerCase().includes(searchTerm) ||
+        bc.description.toLowerCase().includes(searchTerm) ||
+        bc.subCapabilities.some(sub =>
+          sub.name.toLowerCase().includes(searchTerm) ||
+          sub.description.toLowerCase().includes(searchTerm) ||
+          sub.functionalities.some(func =>
+            func.name.toLowerCase().includes(searchTerm) ||
+            func.description.toLowerCase().includes(searchTerm)
+          )
         )
       )
     );

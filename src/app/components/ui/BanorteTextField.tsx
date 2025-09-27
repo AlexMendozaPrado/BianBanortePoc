@@ -4,7 +4,7 @@ import React from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const StyledBanorteTextField = styled(TextField)(({ theme }) => ({
+const StyledBanorteTextField = styled(TextField)(() => ({
   '& .MuiOutlinedInput-root': {
     borderRadius: '4px',
     backgroundColor: '#FFFFFF',

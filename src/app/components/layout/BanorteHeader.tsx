@@ -13,14 +13,14 @@ import {
 import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
+const StyledAppBar = styled(AppBar)(() => ({
   backgroundColor: '#FFFFFF',
   color: '#323E48',
   boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.1)',
   height: '64px',
 }));
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+const StyledToolbar = styled(Toolbar)(() => ({
   height: '64px',
   padding: '0 24px',
   display: 'flex',
@@ -28,13 +28,13 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const LogoSection = styled(Box)(({ theme }) => ({
+const LogoSection = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
 }));
 
-const BanorteLogo = styled('div')(({ theme }) => ({
+const BanorteLogo = styled('div')(() => ({
   width: '120px',
   height: '32px',
   backgroundColor: '#EB0029',
@@ -62,7 +62,7 @@ export const BanorteHeader: React.FC<BanorteHeaderProps> = ({
   title,
   user,
   onMenuClick,
-  onUserMenuClick,
+  onUserMenuClick: _onUserMenuClick,
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 

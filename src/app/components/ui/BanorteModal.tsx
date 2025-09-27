@@ -7,8 +7,6 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Typography,
-  Box,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
@@ -22,7 +20,7 @@ interface BanorteModalProps {
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog)(() => ({
   '& .MuiDialog-paper': {
     borderRadius: '8px',
     maxWidth: '720px',
@@ -33,7 +31,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+const StyledDialogTitle = styled(DialogTitle)(() => ({
   padding: 0,
   marginBottom: '24px',
   fontFamily: 'Gotham',
@@ -45,7 +43,7 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+const StyledDialogContent = styled(DialogContent)(() => ({
   padding: 0,
   marginBottom: '24px',
   fontFamily: 'Roboto',
@@ -54,7 +52,7 @@ const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   color: '#5B6670',
 }));
 
-const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+const StyledDialogActions = styled(DialogActions)(() => ({
   padding: 0,
   gap: '12px',
   justifyContent: 'flex-end',

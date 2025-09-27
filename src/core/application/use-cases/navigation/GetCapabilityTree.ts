@@ -1,6 +1,5 @@
 import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroupRepository';
 import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
-import { StyleType } from '../../../domain/value-objects/StyleType';
 
 /**
  * Caso de uso para obtener el árbol de capacidades con nueva estructura de 5 niveles
@@ -100,7 +99,7 @@ export class GetCapabilityTree {
           styleColor: group.style.getColor(),
           totalCapabilities: group.capabilities.length,
           totalBusinessCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalBusinessCapabilities(), 0),
-          totalSubCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getAllSubCapabilities().length, 0),
+          totalSubCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.businessCapabilities.reduce((subSum, businessCap) => subSum + businessCap.subCapabilities.length, 0), 0),
           totalFunctionalities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalFunctionalities(), 0),
           isActive: group.isActive
         }

@@ -78,7 +78,7 @@ export class GetCapabilityHierarchyUseCase {
         styleColor: group.style.getColor(),
       },
       capabilities: group.capabilities.map(capability => ({
-        id: capability.id.getValue(),
+        id: capability.id.value,
         name: capability.name,
         businessCapabilities: capability.businessCapabilities.map(businessCap => ({
           id: businessCap.id,

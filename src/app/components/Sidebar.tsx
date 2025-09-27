@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  ChevronRight as ChevronRightIcon,
   Folder as FolderIcon,
   FolderOpen as FolderOpenIcon,
   Description as DescriptionIcon,
@@ -112,7 +111,7 @@ export function Sidebar({
 
         const capability = group.capabilities[capIndex];
         const subCapability = capability.businessCapabilities[businessIndex].subCapabilities[subIndex];
-        onSubCapabilitySelect(capability.id.value, subCapability.id.value);
+        onSubCapabilitySelect(capability.id.value, subCapability.id);
       }
     } else if (parts.includes('func')) {
       // Funcionalidad seleccionada (ej: "group-0-cap-0-business-0-sub-0-func-0")
@@ -132,7 +131,7 @@ export function Sidebar({
         const businessCapability = capability.businessCapabilities[businessIndex];
         const subCapability = businessCapability.subCapabilities[subIndex];
         const functionality = subCapability.functionalities[funcIndex];
-        onFunctionalitySelect(capability.id.value, subCapability.id.value, functionality.id.value);
+        onFunctionalitySelect(capability.id.value, subCapability.id, functionality.id);
       }
     }
   };

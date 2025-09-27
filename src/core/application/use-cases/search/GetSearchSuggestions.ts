@@ -98,22 +98,25 @@ export class GetSearchSuggestions {
           suggestions.push(capability.name);
         }
 
-        // Sugerir categorías
-        const categoryDescription = capability.category.description;
-        if (categoryDescription.toLowerCase().includes(query)) {
-          suggestions.push(categoryDescription);
-        }
+        // Sugerir nombres de capacidades empresariales
+        capability.businessCapabilities.forEach(businessCap => {
+          if (businessCap.name.toLowerCase().includes(query)) {
+            suggestions.push(businessCap.name);
+          }
+        });
 
-        // Sugerir palabras clave de la descripción
-        const descriptionWords = capability.description
-          .toLowerCase()
-          .split(/\s+/)
-          .filter(word => word.length > 3 && word.includes(query));
-        
-        suggestions.push(...descriptionWords);
+        // Sugerir palabras clave de los nombres de capacidades empresariales
+        capability.businessCapabilities.forEach(businessCap => {
+          const nameWords = businessCap.name
+            .toLowerCase()
+            .split(/\s+/)
+            .filter(word => word.length > 3 && word.includes(query));
+
+          suggestions.push(...nameWords);
+        });
 
         // Sugerir nombres de subcapacidades
-        capability.subCapabilities.forEach(sub => {
+        capability.getAllSubCapabilities().forEach(sub => {
           if (sub.name.toLowerCase().includes(query)) {
             suggestions.push(sub.name);
           }

@@ -15,7 +15,6 @@ import {
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { SearchArea, ViewMode, SortOption, HierarchyLevel } from './SearchArea';
-import { CapabilityCard } from './CapabilityCard';
 import { AdaptableCard } from './AdaptableCard';
 import { CapabilityList } from './CapabilityList';
 import { DetailPanel } from './DetailPanel';
@@ -29,6 +28,13 @@ import { JsonCapabilityRepository } from '../../infrastructure/repositories/Json
 import { JsonCapabilityGroupRepository } from '../../infrastructure/repositories/JsonCapabilityGroupRepository';
 
 const ITEMS_PER_PAGE = 6;
+
+// Tipos para los datos adaptables
+type AdaptableDataItem =
+  | { item: Capability; parent: Capability }
+  | { item: BusinessCapability; parent: Capability }
+  | { item: SubCapability; parent: Capability; businessParent: BusinessCapability }
+  | { item: Functionality; parent: Capability; businessParent: BusinessCapability; subParent: SubCapability };
 
 export function ExplorerPage() {
   const theme = useTheme();
@@ -50,7 +56,7 @@ export function ExplorerPage() {
   const [currentPage, setCurrentPage] = useState(1);
   
   // Estados de navegación
-  const [selectedCapabilityId, setSelectedCapabilityId] = useState<string>('');
+  const [, setSelectedCapabilityId] = useState<string>('');
   const [detailCapability, setDetailCapability] = useState<Capability | null>(null);
   const [selectedItemContext, setSelectedItemContext] = useState<{
     level: HierarchyLevel;
@@ -64,7 +70,7 @@ export function ExplorerPage() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Repositorios
-  const [repository] = useState(() => new JsonCapabilityRepository());
+  const [] = useState(() => new JsonCapabilityRepository());
   const [groupRepository] = useState(() => new JsonCapabilityGroupRepository());
 
   // Cargar datos iniciales
@@ -84,10 +90,10 @@ export function ExplorerPage() {
 
         // Extraer todas las capacidades empresariales con sus padres
         const allBusinessCapabilities = allCapabilities.flatMap(capability =>
-          capability.businessCapabilities.map(business => ({
+          capability.businessCapabilities?.map(business => ({
             business,
             parent: capability
-          }))
+          })) || []
         );
         console.log('Extracted business capabilities:', allBusinessCapabilities);
         setBusinessCapabilities(allBusinessCapabilities);
@@ -103,7 +109,7 @@ export function ExplorerPage() {
   }, [groupRepository]);
 
   // Generar datos adaptables según el nivel de jerarquía seleccionado
-  const adaptableData = useMemo(() => {
+  const adaptableData = useMemo((): AdaptableDataItem[] => {
     if (!capabilities || capabilities.length === 0) {
       return [];
     }
@@ -117,44 +123,47 @@ export function ExplorerPage() {
 
       case 'business':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities.map(business => ({
+          capability.businessCapabilities?.map(business => ({
             item: business,
             parent: capability
-          }))
+          })) || []
         );
 
       case 'subcapability':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities.flatMap(business =>
-            business.subCapabilities.map(sub => ({
+          capability.businessCapabilities?.flatMap(business =>
+            business.subCapabilities?.map(sub => ({
               item: sub,
               parent: capability,
               businessParent: business
-            }))
-          )
+            })) || []
+          ) || []
         );
 
       case 'functionality':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities.flatMap(business =>
-            business.subCapabilities.flatMap(sub =>
-              sub.functionalities.map(functionality => ({
+          capability.businessCapabilities?.flatMap(business =>
+            business.subCapabilities?.flatMap(sub =>
+              sub.functionalities?.map(functionality => ({
                 item: functionality,
                 parent: capability,
                 businessParent: business,
                 subParent: sub
-              }))
-            )
-          )
+              })) || []
+            ) || []
+          ) || []
         );
 
       default:
-        return businessCapabilities;
+        return businessCapabilities.map(({ business, parent }) => ({
+          item: business,
+          parent: parent
+        }));
     }
   }, [capabilities, businessCapabilities, hierarchyLevel]);
 
   // Filtrar y ordenar datos adaptables
-  const filteredAndSortedData = useMemo(() => {
+  const filteredAndSortedData = useMemo((): AdaptableDataItem[] => {
     if (!adaptableData || adaptableData.length === 0) {
       return [];
     }
@@ -188,25 +197,25 @@ export function ExplorerPage() {
         switch (hierarchyLevel) {
           case 'capability':
             const capability = item as Capability;
-            deepMatch = capability.businessCapabilities.some(bc =>
+            deepMatch = capability.businessCapabilities?.some(bc =>
               bc.name.toLowerCase().includes(searchLower) ||
               bc.description.toLowerCase().includes(searchLower)
-            );
+            ) || false;
             break;
           case 'business':
             const businessCap = item as BusinessCapability;
-            deepMatch = businessCap.subCapabilities.some(sub =>
+            deepMatch = businessCap.subCapabilities?.some(sub =>
               sub.name.toLowerCase().includes(searchLower) ||
-              sub.functionalities.some(func =>
+              sub.functionalities?.some(func =>
                 func.name.toLowerCase().includes(searchLower)
               )
-            );
+            ) || false;
             break;
           case 'subcapability':
             const subCap = item as SubCapability;
-            deepMatch = subCap.functionalities.some(func =>
+            deepMatch = subCap.functionalities?.some(func =>
               func.name.toLowerCase().includes(searchLower)
-            );
+            ) || false;
             break;
         }
 
@@ -291,11 +300,11 @@ export function ExplorerPage() {
     }
   };
 
-  const handleSubCapabilitySelect = (capabilityId: string, subCapabilityId: string) => {
+  const handleSubCapabilitySelect = (capabilityId: string, _subCapabilityId: string) => {
     handleCapabilitySelect(capabilityId);
   };
 
-  const handleFunctionalitySelect = (capabilityId: string, subCapabilityId: string, functionalityId: string) => {
+  const handleFunctionalitySelect = (capabilityId: string, _subCapabilityId: string, _functionalityId: string) => {
     handleCapabilitySelect(capabilityId);
   };
 
@@ -317,7 +326,7 @@ export function ExplorerPage() {
     setSnackbarOpen(true);
   };
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
@@ -355,7 +364,6 @@ export function ExplorerPage() {
         {/* Sidebar */}
         <Sidebar
           capabilityGroups={capabilityGroups}
-          selectedCapabilityId={selectedCapabilityId}
           onCapabilitySelect={handleCapabilitySelect}
           onSubCapabilitySelect={handleSubCapabilitySelect}
           onFunctionalitySelect={handleFunctionalitySelect}

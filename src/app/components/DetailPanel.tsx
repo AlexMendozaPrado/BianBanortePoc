@@ -113,8 +113,8 @@ export function DetailPanel({
       return {
         title: capability?.name || '',
         id: capability?.id.value || '',
-        description: capability?.businessCapabilities.length > 0
-          ? capability.businessCapabilities[0].description
+        description: (capability?.businessCapabilities?.length ?? 0) > 0
+          ? capability?.businessCapabilities?.[0]?.description || 'Sin descripción disponible'
           : 'Capacidad BIAN sin descripción detallada disponible.',
         type: 'Capacidad'
       };

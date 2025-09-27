@@ -72,22 +72,6 @@ export class SearchCapabilities {
    * Valida los filtros de búsqueda
    */
   private validateFilters(filters: SearchFilters): void {
-    if (filters.dateRange) {
-      const { from, to } = filters.dateRange;
-      if (from >= to) {
-        throw new Error('Date range "from" must be before "to"');
-      }
-      
-      const now = new Date();
-      if (to > now) {
-        throw new Error('Date range "to" cannot be in the future');
-      }
-    }
-
-    if (filters.categories && filters.categories.length === 0) {
-      throw new Error('Categories filter cannot be empty array');
-    }
-
     if (filters.levels && filters.levels.length === 0) {
       throw new Error('Levels filter cannot be empty array');
     }

@@ -38,6 +38,15 @@ export class BusinessCapability {
   }
 
   /**
+   * Obtiene todas las funcionalidades de todas las subcapacidades
+   */
+  getAllFunctionalities() {
+    return this.subCapabilities.reduce((allFuncs, subCap) => {
+      return allFuncs.concat(subCap.functionalities);
+    }, [] as any[]);
+  }
+
+  /**
    * Crea una copia de la capacidad empresarial con nuevos valores
    */
   update(updates: Partial<Pick<BusinessCapability, 'name' | 'description' | 'isActive'>>): BusinessCapability {

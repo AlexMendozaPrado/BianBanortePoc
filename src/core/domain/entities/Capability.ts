@@ -49,8 +49,32 @@ export class Capability {
    */
   getTotalFunctionalities(): number {
     return this.businessCapabilities.reduce((total, businessCap) => {
-      return total + businessCap.subCapabilities.length;
+      return total + businessCap.subCapabilities.reduce((subTotal, subCap) => {
+        return subTotal + subCap.functionalities.length;
+      }, 0);
     }, 0);
+  }
+
+  /**
+   * Obtiene todas las subcapacidades de todas las capacidades empresariales
+   */
+  getAllSubCapabilities() {
+    return this.businessCapabilities.reduce((allSubCaps, businessCap) => {
+      return allSubCaps.concat(businessCap.subCapabilities);
+    }, [] as any[]);
+  }
+
+  /**
+   * Obtiene todas las funcionalidades de todas las subcapacidades
+   */
+  getAllFunctionalities() {
+    return this.businessCapabilities.reduce((allFuncs, businessCap) => {
+      return allFuncs.concat(
+        businessCap.subCapabilities.reduce((subFuncs, subCap) => {
+          return subFuncs.concat(subCap.functionalities);
+        }, [] as any[])
+      );
+    }, [] as any[]);
   }
 
   /**

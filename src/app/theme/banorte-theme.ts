@@ -286,23 +286,6 @@ export const banorteTheme = createTheme({
         },
       },
     },
-    MuiTreeItem: {
-      styleOverrides: {
-        root: {
-          '& .MuiTreeItem-content': {
-            padding: '8px 12px',
-            borderRadius: '4px',
-            fontFamily: 'Gotham',
-            fontSize: '14px',
-            color: '#323E48',
-          },
-          '& .Mui-selected': {
-            backgroundColor: '#EB0029 !important',
-            color: 'white',
-          },
-        },
-      },
-    },
     MuiToggleButton: {
       styleOverrides: {
         root: {
@@ -350,21 +333,6 @@ export const banorteTheme = createTheme({
         },
       },
     },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
-        },
-      },
-    },
-    MuiDrawer: {
-      styleOverrides: {
-        paper: {
-          borderRadius: 0,
-          borderRight: '1px solid #E0E0E0',
-        },
-      },
-    },
     MuiListItem: {
       styleOverrides: {
         root: {
@@ -385,24 +353,6 @@ export const banorteTheme = createTheme({
           textTransform: 'none',
           fontWeight: 500,
           minHeight: 48,
-        },
-      },
-    },
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          border: 'none',
-          borderRadius: 8,
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #F0F0F0',
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#FAFAFA',
-            borderBottom: '2px solid #E0E0E0',
-          },
-          '& .MuiDataGrid-row:hover': {
-            backgroundColor: 'rgba(227, 30, 36, 0.04)',
-          },
         },
       },
     },

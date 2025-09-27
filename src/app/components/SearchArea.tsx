@@ -81,7 +81,7 @@ export function SearchArea({
   };
 
   const handleViewChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     newView: ViewMode | null,
   ) => {
     if (newView !== null) {
