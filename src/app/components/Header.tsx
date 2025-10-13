@@ -36,8 +36,8 @@ export function Header({ onMenuClick }: HeaderProps) {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
           <BanorteLogo
             variant="white"
-            height={60}
-            width={200}
+            height={26}
+            width={140}
             useOfficialLogo={true}
             className="mr-4"
           />

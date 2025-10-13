@@ -56,7 +56,7 @@ export const BanorteLogo: React.FC<BanorteLogoProps> = ({
     if (useOfficialLogo && !imageError) {
       return (
         <Image
-          src="/images/logo.png" // Usando el archivo logo.png que existe
+          src="/images/LogotipoBanorteFinal.png"
           alt="Banorte"
           width={width}
           height={height}
