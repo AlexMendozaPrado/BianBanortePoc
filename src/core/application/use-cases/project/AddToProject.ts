@@ -172,7 +172,7 @@ export class AddToProject {
     
     for (const capability of capabilities) {
       const functionality = capability.getAllFunctionalities()
-        .find(func => func.id.value === functionalityId);
+        .find(func => func.id === functionalityId);
       
       if (functionality) {
         return functionality;

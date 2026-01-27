@@ -2,10 +2,10 @@ import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroup
 import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
 
 /**
- * DTO para resultados de búsqueda con información de nivel
+ * DTO para resultados de búsqueda con información de nivel (v2.0)
  */
 export interface SearchResultDto {
-  level: 'group' | 'capability' | 'business' | 'subcapability' | 'functionality';
+  level: 'group' | 'capability' | 'subcapability' | 'baseFunction' | 'functionality';
   id: string;
   name: string;
   description: string;
@@ -15,19 +15,26 @@ export interface SearchResultDto {
     groupName: string;
     capabilityId?: string;
     capabilityName?: string;
-    businessCapabilityId?: string;
-    businessCapabilityName?: string;
     subCapabilityId?: string;
     subCapabilityName?: string;
+    baseFunctionId?: string;
+    baseFunctionName?: string;
   };
   style: {
     name: string;
     color: string;
   };
+  additionalInfo?: {
+    level?: number;
+    systemApplication?: string;
+    commonComponentId?: string;
+    commonComponentName?: string;
+  };
 }
 
 /**
- * Caso de uso para búsqueda avanzada en todos los niveles de la jerarquía
+ * Caso de uso para búsqueda avanzada en todos los niveles de la jerarquía (v2.0)
+ * Group → Capability → SubCapability → BaseFunction → Functionality
  */
 export class SearchAcrossAllLevelsUseCase {
   constructor(private capabilityGroupRepository: CapabilityGroupRepository) {}
@@ -57,35 +64,37 @@ export class SearchAcrossAllLevelsUseCase {
             results.push(this.createCapabilityResult(group, capability, capability.name, searchTerm));
           }
 
-          // Buscar en capacidades empresariales
-          for (const businessCap of capability.businessCapabilities) {
-            if (this.matchesSearchTerm(businessCap.name, searchTerm) ||
-                this.matchesSearchTerm(businessCap.description, searchTerm)) {
-              results.push(this.createBusinessCapabilityResult(
-                group, capability, businessCap,
-                this.getMatchedText([businessCap.name, businessCap.description], searchTerm),
+          // Buscar en subcapacidades
+          for (const subCap of capability.subCapabilities) {
+            if (this.matchesSearchTerm(subCap.name, searchTerm) ||
+                this.matchesSearchTerm(subCap.description, searchTerm)) {
+              results.push(this.createSubCapabilityResult(
+                group, capability, subCap,
+                this.getMatchedText([subCap.name, subCap.description], searchTerm),
                 searchTerm
               ));
             }
 
-            // Buscar en subcapacidades
-            for (const subCap of businessCap.subCapabilities) {
-              if (this.matchesSearchTerm(subCap.name, searchTerm) ||
-                  this.matchesSearchTerm(subCap.description, searchTerm)) {
-                results.push(this.createSubCapabilityResult(
-                  group, capability, businessCap, subCap,
-                  this.getMatchedText([subCap.name, subCap.description], searchTerm),
+            // Buscar en funcionalidades base
+            for (const baseFunc of subCap.baseFunctions) {
+              if (this.matchesSearchTerm(baseFunc.name, searchTerm) ||
+                  this.matchesSearchTerm(baseFunc.description, searchTerm)) {
+                results.push(this.createBaseFunctionResult(
+                  group, capability, subCap, baseFunc,
+                  this.getMatchedText([baseFunc.name, baseFunc.description], searchTerm),
                   searchTerm
                 ));
               }
 
               // Buscar en funcionalidades
-              for (const func of subCap.functionalities) {
+              for (const func of baseFunc.functionalities) {
                 if (this.matchesSearchTerm(func.name, searchTerm) ||
-                    this.matchesSearchTerm(func.description, searchTerm)) {
+                    this.matchesSearchTerm(func.description, searchTerm) ||
+                    this.matchesSearchTerm(func.commonComponentName || '', searchTerm) ||
+                    this.matchesSearchTerm(func.systemApplication || '', searchTerm)) {
                   results.push(this.createFunctionalityResult(
-                    group, capability, businessCap, subCap, func,
-                    this.getMatchedText([func.name, func.description], searchTerm),
+                    group, capability, subCap, baseFunc, func,
+                    this.getMatchedText([func.name, func.description, func.commonComponentName || ''], searchTerm),
                     searchTerm
                   ));
                 }
@@ -165,34 +174,9 @@ export class SearchAcrossAllLevelsUseCase {
   }
 
   /**
-   * Crea resultado para nivel de capacidad empresarial
-   */
-  private createBusinessCapabilityResult(group: any, capability: any, businessCap: any, matchedText: string, searchTerm: string): SearchResultDto {
-    return {
-      level: 'business',
-      id: businessCap.id,
-      name: businessCap.name,
-      description: businessCap.description,
-      matchedText: this.highlightSearchTerm(matchedText, searchTerm),
-      path: {
-        groupId: group.id,
-        groupName: group.name,
-        capabilityId: capability.id.getValue(),
-        capabilityName: capability.name,
-        businessCapabilityId: businessCap.id,
-        businessCapabilityName: businessCap.name,
-      },
-      style: {
-        name: group.style.getValue(),
-        color: group.style.getColor(),
-      },
-    };
-  }
-
-  /**
    * Crea resultado para nivel de subcapacidad
    */
-  private createSubCapabilityResult(group: any, capability: any, businessCap: any, subCap: any, matchedText: string, searchTerm: string): SearchResultDto {
+  private createSubCapabilityResult(group: any, capability: any, subCap: any, matchedText: string, searchTerm: string): SearchResultDto {
     return {
       level: 'subcapability',
       id: subCap.id,
@@ -204,8 +188,6 @@ export class SearchAcrossAllLevelsUseCase {
         groupName: group.name,
         capabilityId: capability.id.getValue(),
         capabilityName: capability.name,
-        businessCapabilityId: businessCap.id,
-        businessCapabilityName: businessCap.name,
         subCapabilityId: subCap.id,
         subCapabilityName: subCap.name,
       },
@@ -217,9 +199,36 @@ export class SearchAcrossAllLevelsUseCase {
   }
 
   /**
+   * Crea resultado para nivel de funcionalidad base
+   */
+  private createBaseFunctionResult(group: any, capability: any, subCap: any, baseFunc: any, matchedText: string, searchTerm: string): SearchResultDto {
+    return {
+      level: 'baseFunction',
+      id: baseFunc.id,
+      name: baseFunc.name,
+      description: baseFunc.description,
+      matchedText: this.highlightSearchTerm(matchedText, searchTerm),
+      path: {
+        groupId: group.id,
+        groupName: group.name,
+        capabilityId: capability.id.getValue(),
+        capabilityName: capability.name,
+        subCapabilityId: subCap.id,
+        subCapabilityName: subCap.name,
+        baseFunctionId: baseFunc.id,
+        baseFunctionName: baseFunc.name,
+      },
+      style: {
+        name: group.style.getValue(),
+        color: group.style.getColor(),
+      },
+    };
+  }
+
+  /**
    * Crea resultado para nivel de funcionalidad
    */
-  private createFunctionalityResult(group: any, capability: any, businessCap: any, subCap: any, func: any, matchedText: string, searchTerm: string): SearchResultDto {
+  private createFunctionalityResult(group: any, capability: any, subCap: any, baseFunc: any, func: any, matchedText: string, searchTerm: string): SearchResultDto {
     return {
       level: 'functionality',
       id: func.id,
@@ -231,14 +240,20 @@ export class SearchAcrossAllLevelsUseCase {
         groupName: group.name,
         capabilityId: capability.id.getValue(),
         capabilityName: capability.name,
-        businessCapabilityId: businessCap.id,
-        businessCapabilityName: businessCap.name,
         subCapabilityId: subCap.id,
         subCapabilityName: subCap.name,
+        baseFunctionId: baseFunc.id,
+        baseFunctionName: baseFunc.name,
       },
       style: {
         name: group.style.getValue(),
         color: group.style.getColor(),
+      },
+      additionalInfo: {
+        level: func.level,
+        systemApplication: func.systemApplication,
+        commonComponentId: func.commonComponentId,
+        commonComponentName: func.commonComponentName,
       },
     };
   }
@@ -271,7 +286,7 @@ export class SearchAcrossAllLevelsUseCase {
       if (!aStartsWithName && bStartsWithName) return 1;
 
       // Ordenar por jerarquía (grupos primero, funcionalidades al final)
-      const levelOrder = { group: 1, capability: 2, business: 3, subcapability: 4, functionality: 5 };
+      const levelOrder = { group: 1, capability: 2, subcapability: 3, baseFunction: 4, functionality: 5 };
       return levelOrder[a.level] - levelOrder[b.level];
     });
   }

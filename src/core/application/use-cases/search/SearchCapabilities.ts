@@ -138,7 +138,7 @@ export interface SearchCapabilitiesResponse {
  * Filtros de búsqueda (adaptado para nueva estructura)
  */
 export interface SearchFilters {
-  levels?: ('group' | 'capability' | 'business' | 'subcapability' | 'functionality')[];
+  levels?: ('group' | 'capability' | 'subcapability' | 'baseFunction' | 'functionality')[];
   styles?: string[];
   activeOnly?: boolean;
 }

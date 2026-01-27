@@ -16,29 +16,29 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { Capability } from '../../core/domain/entities/Capability';
-import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';
 import { SubCapability } from '../../core/domain/entities/SubCapability';
+import { BaseFunction } from '../../core/domain/entities/BaseFunction';
 import { Functionality } from '../../core/domain/entities/Functionality';
 import { HierarchyLevel } from './SearchArea';
 
 interface AdaptableCardProps {
   hierarchyLevel: HierarchyLevel;
   data: {
-    item: Capability | BusinessCapability | SubCapability | Functionality;
+    item: Capability | SubCapability | BaseFunction | Functionality;
     parent?: Capability;
-    businessParent?: BusinessCapability;
     subParent?: SubCapability;
+    baseFunctionParent?: BaseFunction;
   };
   onViewDetails: (capability: Capability, context?: {
     level: HierarchyLevel;
-    item: Capability | BusinessCapability | SubCapability | Functionality;
-    businessParent?: BusinessCapability;
+    item: Capability | SubCapability | BaseFunction | Functionality;
     subParent?: SubCapability;
+    baseFunctionParent?: BaseFunction;
   }) => void;
   onAddToProject?: (capability: Capability) => void;
 }
 
-// Mapeo de categorías a colores
+// Mapeo de categorias a colores
 const categoryColors: Record<string, string> = {
   'informacion': '#2196F3',
   'documentos': '#4CAF50',
@@ -46,41 +46,41 @@ const categoryColors: Record<string, string> = {
   'validacion': '#FF9800',
   'busqueda': '#4CAF50',
   'oferta': '#9C27B0',
-  'contratación': '#9C27B0',
+  'contratacion': '#9C27B0',
   'default': '#5B6670',
 };
 
-// Función para obtener el color de la categoría
+// Funcion para obtener el color de la categoria
 const getCategoryColor = (category: string): string => {
   const normalizedCategory = category.toLowerCase();
   return categoryColors[normalizedCategory] || categoryColors.default;
 };
 
-// Función para determinar la categoría basada en el contenido
+// Funcion para determinar la categoria basada en el contenido
 const determineCategory = (name: string, description?: string): string => {
   const nameText = name.toLowerCase();
   const descText = description?.toLowerCase() || '';
 
-  if (nameText.includes('información') || descText.includes('información')) {
+  if (nameText.includes('informacion') || nameText.includes('información') || descText.includes('informacion')) {
     return 'informacion';
   }
   if (nameText.includes('documento') || descText.includes('documento')) {
     return 'documentos';
   }
-  if (nameText.includes('gestión') || nameText.includes('gestion') || descText.includes('gestión')) {
+  if (nameText.includes('gestion') || nameText.includes('gestión') || descText.includes('gestion')) {
     return 'gestion';
   }
-  if (nameText.includes('validación') || nameText.includes('validacion') || descText.includes('validación')) {
+  if (nameText.includes('validacion') || nameText.includes('validación') || descText.includes('validacion')) {
     return 'validacion';
   }
-  if (nameText.includes('búsqueda') || nameText.includes('busqueda') || descText.includes('búsqueda')) {
+  if (nameText.includes('busqueda') || nameText.includes('búsqueda') || descText.includes('busqueda')) {
     return 'busqueda';
   }
   if (nameText.includes('oferta') || descText.includes('oferta')) {
     return 'oferta';
   }
-  if (nameText.includes('contratación') || descText.includes('contratación')) {
-    return 'contratación';
+  if (nameText.includes('contratacion') || nameText.includes('contratación') || descText.includes('contratacion')) {
+    return 'contratacion';
   }
 
   return 'default';
@@ -92,62 +92,62 @@ export function AdaptableCard({
   onViewDetails,
   onAddToProject
 }: AdaptableCardProps) {
-  const { item, parent, businessParent, subParent } = data;
+  const { item, parent, subParent, baseFunctionParent } = data;
 
   const renderCapabilityCard = (capability: Capability) => {
     const category = determineCategory(capability.name);
     const categoryColor = getCategoryColor(category);
-    const businessCapabilityCount = capability.getTotalBusinessCapabilities();
+    const subCapabilityCount = capability.getTotalSubCapabilities();
     const functionalityCount = capability.getTotalFunctionalities();
 
     return {
       title: capability.name,
       id: capability.id.value,
-      description: capability.businessCapabilities.length > 0
-        ? capability.businessCapabilities[0].description
-        : `Capacidad con ${businessCapabilityCount} capacidades empresariales`,
+      description: capability.subCapabilities.length > 0
+        ? capability.subCapabilities[0].description || `Capacidad con ${subCapabilityCount} subcapacidades`
+        : `Capacidad con ${subCapabilityCount} subcapacidades`,
       category,
       categoryColor,
       stats: `${functionalityCount} funcionalidades`,
-      chips: capability.businessCapabilities.slice(0, 2).map(bc => bc.name),
-      extraCount: capability.businessCapabilities.length > 2 ? capability.businessCapabilities.length - 2 : 0,
+      chips: capability.subCapabilities.slice(0, 2).map(sc => sc.name),
+      extraCount: capability.subCapabilities.length > 2 ? capability.subCapabilities.length - 2 : 0,
       targetCapability: capability
-    };
-  };
-
-  const renderBusinessCapabilityCard = (businessCapability: BusinessCapability) => {
-    const category = determineCategory(businessCapability.name, businessCapability.description);
-    const categoryColor = getCategoryColor(category);
-    const subCapabilityCount = businessCapability.subCapabilities.length;
-    const functionalityCount = businessCapability.subCapabilities.reduce((total, sub) => total + sub.functionalities.length, 0);
-
-    return {
-      title: businessCapability.name,
-      id: businessCapability.id,
-      description: businessCapability.description || `Capacidad empresarial con ${subCapabilityCount} subcapacidades`,
-      category,
-      categoryColor,
-      stats: `${functionalityCount} funcionalidades`,
-      chips: businessCapability.subCapabilities.slice(0, 3).map(sub => sub.name),
-      extraCount: businessCapability.subCapabilities.length > 3 ? businessCapability.subCapabilities.length - 3 : 0,
-      targetCapability: parent!
     };
   };
 
   const renderSubCapabilityCard = (subCapability: SubCapability) => {
     const category = determineCategory(subCapability.name, subCapability.description);
     const categoryColor = getCategoryColor(category);
-    const functionalityCount = subCapability.functionalities.length;
+    const baseFunctionCount = subCapability.baseFunctions.length;
+    const functionalityCount = subCapability.getTotalFunctionalities();
 
     return {
       title: subCapability.name,
       id: subCapability.id,
-      description: subCapability.description || `Subcapacidad con ${functionalityCount} funcionalidades`,
+      description: subCapability.description || `Subcapacidad con ${baseFunctionCount} funcionalidades base`,
       category,
       categoryColor,
       stats: `${functionalityCount} funcionalidades`,
-      chips: subCapability.functionalities.slice(0, 3).map(func => func.name),
-      extraCount: subCapability.functionalities.length > 3 ? subCapability.functionalities.length - 3 : 0,
+      chips: subCapability.baseFunctions.slice(0, 3).map(bf => bf.name),
+      extraCount: subCapability.baseFunctions.length > 3 ? subCapability.baseFunctions.length - 3 : 0,
+      targetCapability: parent!
+    };
+  };
+
+  const renderBaseFunctionCard = (baseFunction: BaseFunction) => {
+    const category = determineCategory(baseFunction.name, baseFunction.description);
+    const categoryColor = getCategoryColor(category);
+    const functionalityCount = baseFunction.functionalities.length;
+
+    return {
+      title: baseFunction.name,
+      id: baseFunction.id,
+      description: baseFunction.description || `Funcionalidad base con ${functionalityCount} funcionalidades`,
+      category,
+      categoryColor,
+      stats: `${functionalityCount} funcionalidades`,
+      chips: baseFunction.functionalities.slice(0, 3).map(func => func.name),
+      extraCount: baseFunction.functionalities.length > 3 ? baseFunction.functionalities.length - 3 : 0,
       targetCapability: parent!
     };
   };
@@ -156,36 +156,41 @@ export function AdaptableCard({
     const category = determineCategory(functionality.name, functionality.description);
     const categoryColor = getCategoryColor(category);
 
+    // Informacion adicional de la funcionalidad
+    const levelText = functionality.level ? `Nivel ${functionality.level}` : '';
+    const systemText = functionality.systemApplication || '';
+    const ccText = functionality.commonComponentName || '';
+
     return {
       title: functionality.name,
       id: functionality.id,
       description: functionality.description || 'Funcionalidad del sistema',
       category,
       categoryColor,
-      stats: 'Funcionalidad',
-      chips: [],
+      stats: [levelText, systemText].filter(Boolean).join(' | ') || 'Funcionalidad',
+      chips: ccText ? [ccText] : [],
       extraCount: 0,
       targetCapability: parent!
     };
   };
 
-  // Determinar qué tipo de tarjeta renderizar
+  // Determinar que tipo de tarjeta renderizar
   let cardData;
   switch (hierarchyLevel) {
     case 'capability':
       cardData = renderCapabilityCard(item as Capability);
       break;
-    case 'business':
-      cardData = renderBusinessCapabilityCard(item as BusinessCapability);
-      break;
     case 'subcapability':
       cardData = renderSubCapabilityCard(item as SubCapability);
+      break;
+    case 'baseFunction':
+      cardData = renderBaseFunctionCard(item as BaseFunction);
       break;
     case 'functionality':
       cardData = renderFunctionalityCard(item as Functionality);
       break;
     default:
-      cardData = renderBusinessCapabilityCard(item as BusinessCapability);
+      cardData = renderSubCapabilityCard(item as SubCapability);
   }
 
   return (
@@ -207,8 +212,8 @@ export function AdaptableCard({
       onClick={() => onViewDetails(cardData.targetCapability, {
         level: hierarchyLevel,
         item: item,
-        businessParent: businessParent,
-        subParent: subParent
+        subParent: subParent,
+        baseFunctionParent: baseFunctionParent
       })}
     >
       <CardHeader
@@ -292,7 +297,7 @@ export function AdaptableCard({
           ))}
           {cardData.extraCount > 0 && (
             <Chip
-              label={`+${cardData.extraCount} más`}
+              label={`+${cardData.extraCount} mas`}
               size="small"
               variant="outlined"
               sx={{
@@ -316,8 +321,8 @@ export function AdaptableCard({
             onViewDetails(cardData.targetCapability, {
               level: hierarchyLevel,
               item: item,
-              businessParent: businessParent,
-              subParent: subParent
+              subParent: subParent,
+              baseFunctionParent: baseFunctionParent
             });
           }}
           sx={{
@@ -331,7 +336,7 @@ export function AdaptableCard({
             },
           }}
         >
-          Ver más
+          Ver mas
         </Button>
 
         {onAddToProject && (

@@ -1,15 +1,16 @@
 import { CapabilityGroupRepository } from '../../core/domain/ports/CapabilityGroupRepository';
 import { CapabilityGroup } from '../../core/domain/entities/CapabilityGroup';
 import { Capability } from '../../core/domain/entities/Capability';
-import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';
 import { SubCapability } from '../../core/domain/entities/SubCapability';
+import { BaseFunction } from '../../core/domain/entities/BaseFunction';
 import { Functionality } from '../../core/domain/entities/Functionality';
 import { CapabilityId } from '../../core/domain/value-objects/CapabilityId';
 import { StyleType } from '../../core/domain/value-objects/StyleType';
 import bianData from '../data/bian-data.json';
 
 /**
- * Implementación del repositorio de grupos de capacidades usando datos JSON
+ * Implementacion del repositorio de grupos de capacidades usando datos JSON v2.0
+ * Nueva estructura: grupos -> capacidades -> subcapacidades -> funcionalidadesBase -> funcionalidades
  */
 export class JsonCapabilityGroupRepository implements CapabilityGroupRepository {
   private capabilityGroups: CapabilityGroup[] = [];
@@ -19,13 +20,18 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
   }
 
   /**
-   * Carga los datos desde el archivo JSON con la nueva estructura
+   * Carga los datos desde el archivo JSON con la nueva estructura v2.0
    */
   private loadData(): void {
     try {
-      this.capabilityGroups = (bianData as any).CEfuncionalidades?.map((groupData: any) =>
+      const data = bianData as any;
+
+      // Soportar tanto estructura v2.0 (grupos) como v1.0 (CEfuncionalidades)
+      const groups = data.grupos || data.CEfuncionalidades || [];
+
+      this.capabilityGroups = groups.map((groupData: any) =>
         this.mapToCapabilityGroup(groupData)
-      ) || [];
+      );
     } catch (error) {
       console.error('Error loading BIAN data:', error);
       this.capabilityGroups = [];
@@ -36,7 +42,7 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
    * Mapea datos JSON a entidad CapabilityGroup
    */
   private mapToCapabilityGroup(data: any): CapabilityGroup {
-    const style = new StyleType(data.estilo);
+    const style = new StyleType(data.estilo || 'info');
 
     const capabilities = data.capacidades?.map((capData: any) =>
       this.mapToCapability(capData, data.Nombre)
@@ -47,7 +53,7 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
       data.Nombre,
       style,
       capabilities,
-      true, // isActive por defecto
+      true,
       new Date(),
       new Date()
     );
@@ -60,36 +66,17 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
     const capabilityId = new CapabilityId(data.Id);
     const groupId = this.generateGroupId(groupName);
 
-    const businessCapabilities = data.empresarial?.map((bizData: any) =>
-      this.mapToBusinessCapability(bizData, data.Id)
+    // Nueva estructura v2.0: subcapacidades directamente
+    const subCapabilities = data.subcapacidades?.map((subData: any) =>
+      this.mapToSubCapability(subData, data.Id)
     ) || [];
 
     return new Capability(
       capabilityId,
       data.Nombre,
       groupId,
-      businessCapabilities,
-      true, // isActive por defecto
-      new Date(),
-      new Date()
-    );
-  }
-
-  /**
-   * Mapea datos JSON a entidad BusinessCapability
-   */
-  private mapToBusinessCapability(data: any, capabilityId: string): BusinessCapability {
-    const subCapabilities = data.subcapacidad?.map((subData: any) =>
-      this.mapToSubCapability(subData, data.Id)
-    ) || [];
-
-    return new BusinessCapability(
-      data.Id,
-      data.Nombre,
-      data.Descripcion || '',
-      capabilityId,
       subCapabilities,
-      true, // isActive por defecto
+      true,
       new Date(),
       new Date()
     );
@@ -98,40 +85,65 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
   /**
    * Mapea datos JSON a entidad SubCapability
    */
-  private mapToSubCapability(data: any, businessCapabilityId: string): SubCapability {
-    const functionalities = data.funcionalidades?.map((funcData: any) =>
-      this.mapToFunctionality(funcData, data.Id)
+  private mapToSubCapability(data: any, capabilityId: string): SubCapability {
+    // Nueva estructura v2.0: funcionalidadesBase
+    const baseFunctions = data.funcionalidadesBase?.map((bfData: any) =>
+      this.mapToBaseFunction(bfData, data.Id)
     ) || [];
 
     return new SubCapability(
       data.Id,
       data.Nombre,
       data.Descripcion || '',
-      businessCapabilityId,
-      functionalities,
-      true, // isActive por defecto
+      capabilityId,
+      baseFunctions,
+      true,
       new Date(),
       new Date()
     );
   }
 
   /**
-   * Mapea datos JSON a entidad Functionality
+   * Mapea datos JSON a entidad BaseFunction
    */
-  private mapToFunctionality(data: any, subCapabilityId: string): Functionality {
-    return new Functionality(
+  private mapToBaseFunction(data: any, subCapabilityId: string): BaseFunction {
+    const functionalities = data.funcionalidades?.map((funcData: any) =>
+      this.mapToFunctionality(funcData, data.Id)
+    ) || [];
+
+    return new BaseFunction(
       data.Id,
       data.Nombre,
       data.Descripcion || '',
       subCapabilityId,
-      true, // isActive por defecto
+      functionalities,
+      true,
       new Date(),
       new Date()
     );
   }
 
   /**
-   * Genera un ID único para el grupo basado en el nombre
+   * Mapea datos JSON a entidad Functionality con nuevos campos
+   */
+  private mapToFunctionality(data: any, baseFunctionId: string): Functionality {
+    return new Functionality(
+      data.Id,
+      data.Nombre,
+      data.Descripcion || '',
+      baseFunctionId,
+      data.ComponenteComunId || undefined,
+      data.ComponenteComunNombre || undefined,
+      data.Nivel || undefined,
+      data.Sistema || undefined,
+      true,
+      new Date(),
+      new Date()
+    );
+  }
+
+  /**
+   * Genera un ID unico para el grupo basado en el nombre
    */
   private generateGroupId(name: string): string {
     return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -177,7 +189,7 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
   }
 
   /**
-   * Búsqueda textual en grupos
+   * Busqueda textual profunda en todos los niveles (6 niveles)
    */
   async search(query: string): Promise<CapabilityGroup[]> {
     const searchTerm = query.toLowerCase();
@@ -185,15 +197,17 @@ export class JsonCapabilityGroupRepository implements CapabilityGroupRepository 
       group.name.toLowerCase().includes(searchTerm) ||
       group.capabilities.some(cap =>
         cap.name.toLowerCase().includes(searchTerm) ||
-        cap.businessCapabilities.some(bc =>
-          bc.name.toLowerCase().includes(searchTerm) ||
-          bc.description.toLowerCase().includes(searchTerm) ||
-          bc.subCapabilities.some(sub =>
-            sub.name.toLowerCase().includes(searchTerm) ||
-            sub.description.toLowerCase().includes(searchTerm) ||
-            sub.functionalities.some(func =>
+        cap.subCapabilities.some(subCap =>
+          subCap.name.toLowerCase().includes(searchTerm) ||
+          subCap.description.toLowerCase().includes(searchTerm) ||
+          subCap.baseFunctions.some(baseFunc =>
+            baseFunc.name.toLowerCase().includes(searchTerm) ||
+            baseFunc.description.toLowerCase().includes(searchTerm) ||
+            baseFunc.functionalities.some(func =>
               func.name.toLowerCase().includes(searchTerm) ||
-              func.description.toLowerCase().includes(searchTerm)
+              func.description.toLowerCase().includes(searchTerm) ||
+              (func.commonComponentName?.toLowerCase().includes(searchTerm) ?? false) ||
+              (func.systemApplication?.toLowerCase().includes(searchTerm) ?? false)
             )
           )
         )

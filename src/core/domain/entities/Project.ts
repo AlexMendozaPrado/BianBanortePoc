@@ -45,7 +45,7 @@ export class Project {
       this.name,
       this.description,
       this.selectedCapabilities.filter(cap => cap.id.value !== capabilityId),
-      this.selectedFunctionalities.filter(func => func.subCapabilityId !== capabilityId),
+      this.selectedFunctionalities.filter(func => func.baseFunctionId !== capabilityId),
       this.status,
       this.createdAt,
       new Date()

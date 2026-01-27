@@ -2,7 +2,7 @@ import { SearchService } from '../../../domain/ports/SearchService';
 import { CapabilityRepository } from '../../../domain/ports/CapabilityRepository';
 
 /**
- * Caso de uso para obtener sugerencias de búsqueda
+ * Caso de uso para obtener sugerencias de búsqueda (v2.0)
  */
 export class GetSearchSuggestions {
   constructor(
@@ -82,7 +82,7 @@ export class GetSearchSuggestions {
   }
 
   /**
-   * Obtiene sugerencias adicionales basadas en capacidades existentes
+   * Obtiene sugerencias adicionales basadas en capacidades existentes (v2.0)
    */
   private async getAdditionalSuggestions(partialQuery: string): Promise<string[]> {
     const suggestions: string[] = [];
@@ -91,41 +91,42 @@ export class GetSearchSuggestions {
     try {
       // Buscar en nombres de capacidades
       const capabilities = await this.capabilityRepository.findAll();
-      
+
       capabilities.forEach(capability => {
         // Sugerir nombres de capacidades
         if (capability.name.toLowerCase().includes(query)) {
           suggestions.push(capability.name);
         }
 
-        // Sugerir nombres de capacidades empresariales
-        capability.businessCapabilities.forEach(businessCap => {
-          if (businessCap.name.toLowerCase().includes(query)) {
-            suggestions.push(businessCap.name);
+        // Sugerir nombres de subcapacidades
+        capability.subCapabilities.forEach(subCap => {
+          if (subCap.name.toLowerCase().includes(query)) {
+            suggestions.push(subCap.name);
           }
-        });
 
-        // Sugerir palabras clave de los nombres de capacidades empresariales
-        capability.businessCapabilities.forEach(businessCap => {
-          const nameWords = businessCap.name
+          // Sugerir palabras clave de los nombres de subcapacidades
+          const nameWords = subCap.name
             .toLowerCase()
             .split(/\s+/)
             .filter(word => word.length > 3 && word.includes(query));
-
           suggestions.push(...nameWords);
-        });
 
-        // Sugerir nombres de subcapacidades
-        capability.getAllSubCapabilities().forEach(sub => {
-          if (sub.name.toLowerCase().includes(query)) {
-            suggestions.push(sub.name);
-          }
+          // Sugerir nombres de funcionalidades base
+          subCap.baseFunctions.forEach(baseFunc => {
+            if (baseFunc.name.toLowerCase().includes(query)) {
+              suggestions.push(baseFunc.name);
+            }
+          });
         });
 
         // Sugerir nombres de funcionalidades
         capability.getAllFunctionalities().forEach(func => {
           if (func.name.toLowerCase().includes(query)) {
             suggestions.push(func.name);
+          }
+          // También sugerir por componente común
+          if (func.commonComponentName?.toLowerCase().includes(query)) {
+            suggestions.push(func.commonComponentName);
           }
         });
       });

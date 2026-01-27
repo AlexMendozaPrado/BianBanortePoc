@@ -1,91 +1,94 @@
 import { CapabilityId } from '../value-objects/CapabilityId';
-import { BusinessCapability } from './BusinessCapability';
+import { SubCapability } from './SubCapability';
+import { BaseFunction } from './BaseFunction';
+import { Functionality } from './Functionality';
 
 /**
- * Entidad que representa una Capacidad (segundo nivel en la jerarquía)
- * Ahora contiene capacidades empresariales en lugar de subcapacidades directamente
+ * Entidad que representa una Capacidad Empresarial (segundo nivel en la jerarquia)
+ * Ahora contiene SubCapacidades directamente (se elimino BusinessCapability)
  */
 export class Capability {
   constructor(
     public readonly id: CapabilityId,
     public readonly name: string,
     public readonly groupId: string,
-    public readonly businessCapabilities: BusinessCapability[] = [],
+    public readonly subCapabilities: SubCapability[] = [],
     public readonly isActive: boolean = true,
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date()
   ) {}
 
   /**
-   * Verifica si la capacidad tiene capacidades empresariales
+   * Verifica si la capacidad tiene subcapacidades
    */
-  hasBusinessCapabilities(): boolean {
-    return this.businessCapabilities.length > 0;
+  hasSubCapabilities(): boolean {
+    return this.subCapabilities.length > 0;
   }
 
   /**
    * Verifica si la capacidad puede ser activada
    */
   canBeActivated(): boolean {
-    return this.hasBusinessCapabilities() && this.isActive;
+    return this.hasSubCapabilities() && this.isActive;
   }
 
   /**
-   * Verifica si está completamente configurada
+   * Verifica si esta completamente configurada
    */
   isCompletelyConfigured(): boolean {
-    return this.hasBusinessCapabilities() && this.businessCapabilities.every(bc => bc.isActive);
+    return this.hasSubCapabilities() && this.subCapabilities.every(sc => sc.isActive);
   }
 
   /**
-   * Obtiene el total de capacidades empresariales
+   * Obtiene el total de subcapacidades
    */
-  getTotalBusinessCapabilities(): number {
-    return this.businessCapabilities.length;
+  getTotalSubCapabilities(): number {
+    return this.subCapabilities.length;
   }
 
   /**
-   * Obtiene el total de funcionalidades sumando todas las subcapacidades de todas las capacidades empresariales
+   * Obtiene el total de funcionalidades base
+   */
+  getTotalBaseFunctions(): number {
+    return this.subCapabilities.reduce((total, sc) => total + sc.baseFunctions.length, 0);
+  }
+
+  /**
+   * Obtiene el total de funcionalidades
    */
   getTotalFunctionalities(): number {
-    return this.businessCapabilities.reduce((total, businessCap) => {
-      return total + businessCap.subCapabilities.reduce((subTotal, subCap) => {
-        return subTotal + subCap.functionalities.length;
+    return this.subCapabilities.reduce((total, sc) => {
+      return total + sc.baseFunctions.reduce((subTotal, bf) => {
+        return subTotal + bf.functionalities.length;
       }, 0);
     }, 0);
   }
 
   /**
-   * Obtiene todas las subcapacidades de todas las capacidades empresariales
+   * Obtiene todas las funcionalidades base
    */
-  getAllSubCapabilities() {
-    return this.businessCapabilities.reduce((allSubCaps, businessCap) => {
-      return allSubCaps.concat(businessCap.subCapabilities);
-    }, [] as any[]);
+  getAllBaseFunctions(): BaseFunction[] {
+    return this.subCapabilities.flatMap(sc => sc.baseFunctions);
   }
 
   /**
-   * Obtiene todas las funcionalidades de todas las subcapacidades
+   * Obtiene todas las funcionalidades
    */
-  getAllFunctionalities() {
-    return this.businessCapabilities.reduce((allFuncs, businessCap) => {
-      return allFuncs.concat(
-        businessCap.subCapabilities.reduce((subFuncs, subCap) => {
-          return subFuncs.concat(subCap.functionalities);
-        }, [] as any[])
-      );
-    }, [] as any[]);
+  getAllFunctionalities(): Functionality[] {
+    return this.subCapabilities.flatMap(sc =>
+      sc.baseFunctions.flatMap(bf => bf.functionalities)
+    );
   }
 
   /**
    * Crea una copia de la capacidad con nuevos valores
    */
-  update(updates: Partial<Pick<Capability, 'name' | 'isActive'>>): Capability {
+  update(updates: Partial<Pick<Capability, 'name' | 'subCapabilities' | 'isActive'>>): Capability {
     return new Capability(
       this.id,
       updates.name ?? this.name,
       this.groupId,
-      this.businessCapabilities,
+      updates.subCapabilities ?? this.subCapabilities,
       updates.isActive ?? this.isActive,
       this.createdAt,
       new Date()

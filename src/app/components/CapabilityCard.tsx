@@ -16,55 +16,55 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { Capability } from '../../core/domain/entities/Capability';
-import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';
+import { SubCapability } from '../../core/domain/entities/SubCapability';
 
 interface CapabilityCardProps {
-  businessCapability: BusinessCapability;
+  subCapability: SubCapability;
   parentCapability: Capability;
   onViewDetails: (capability: Capability) => void;
   onAddToProject?: (capability: Capability) => void;
 }
 
-// Mapeo de categorías a colores
+// Mapeo de categorias a colores
 const categoryColors: Record<string, string> = {
   'informacion': '#2196F3',
-  'documentos': '#4CAF50', 
+  'documentos': '#4CAF50',
   'gestion': '#9C27B0',
   'validacion': '#FF9800',
   'busqueda': '#4CAF50',
   'default': '#5B6670',
 };
 
-// Función para obtener el color de la categoría
+// Funcion para obtener el color de la categoria
 const getCategoryColor = (category: string): string => {
   const normalizedCategory = category.toLowerCase();
   return categoryColors[normalizedCategory] || categoryColors.default;
 };
 
-// Función para determinar la categoría basada en la capacidad empresarial
-const determineCategory = (businessCapability: BusinessCapability): string => {
-  const name = businessCapability.name.toLowerCase();
-  const description = businessCapability.description.toLowerCase();
+// Funcion para determinar la categoria basada en la subcapacidad
+const determineCategory = (subCapability: SubCapability): string => {
+  const name = subCapability.name.toLowerCase();
+  const description = subCapability.description.toLowerCase();
 
-  if (name.includes('información') || description.includes('información')) {
+  if (name.includes('informacion') || name.includes('información') || description.includes('informacion')) {
     return 'informacion';
   }
   if (name.includes('documento') || description.includes('documento')) {
     return 'documentos';
   }
-  if (name.includes('gestión') || name.includes('gestion') || description.includes('gestión')) {
+  if (name.includes('gestion') || name.includes('gestión') || description.includes('gestion')) {
     return 'gestion';
   }
-  if (name.includes('validación') || name.includes('validacion') || description.includes('validación')) {
+  if (name.includes('validacion') || name.includes('validación') || description.includes('validacion')) {
     return 'validacion';
   }
-  if (name.includes('búsqueda') || name.includes('busqueda') || description.includes('búsqueda')) {
+  if (name.includes('busqueda') || name.includes('búsqueda') || description.includes('busqueda')) {
     return 'busqueda';
   }
   if (name.includes('oferta') || description.includes('oferta')) {
     return 'gestion';
   }
-  if (name.includes('contratación') || description.includes('contratación')) {
+  if (name.includes('contratacion') || name.includes('contratación') || description.includes('contratacion')) {
     return 'gestion';
   }
 
@@ -72,15 +72,15 @@ const determineCategory = (businessCapability: BusinessCapability): string => {
 };
 
 export function CapabilityCard({
-  businessCapability,
+  subCapability,
   parentCapability,
   onViewDetails,
   onAddToProject
 }: CapabilityCardProps) {
-  const category = determineCategory(businessCapability);
+  const category = determineCategory(subCapability);
   const categoryColor = getCategoryColor(category);
-  const subCapabilityCount = businessCapability.subCapabilities.length;
-  const functionalityCount = businessCapability.subCapabilities.reduce((total, sub) => total + sub.functionalities.length, 0);
+  const baseFunctionCount = subCapability.baseFunctions.length;
+  const functionalityCount = subCapability.getTotalFunctionalities();
 
   return (
     <Card
@@ -101,10 +101,10 @@ export function CapabilityCard({
       onClick={() => onViewDetails(parentCapability)}
     >
       <CardHeader
-        title={businessCapability.name}
+        title={subCapability.name}
         action={
           <Chip
-            label={businessCapability.id}
+            label={subCapability.id}
             size="small"
             sx={{
               backgroundColor: '#F4F7F8',
@@ -122,7 +122,7 @@ export function CapabilityCard({
         }}
         sx={{ pb: 1 }}
       />
-      
+
       <CardContent sx={{ flexGrow: 1, pt: 0 }}>
         <Typography
           variant="body2"
@@ -137,7 +137,7 @@ export function CapabilityCard({
             fontSize: '14px',
           }}
         >
-          {businessCapability.description || `Capacidad empresarial con ${subCapabilityCount} subcapacidades`}
+          {subCapability.description || `Subcapacidad con ${baseFunctionCount} funcionalidades base`}
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -152,7 +152,7 @@ export function CapabilityCard({
               fontWeight: '500',
             }}
           />
-          
+
           <Typography
             variant="caption"
             sx={{
@@ -165,10 +165,10 @@ export function CapabilityCard({
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {businessCapability.subCapabilities.slice(0, 3).map((subCap) => (
+          {subCapability.baseFunctions.slice(0, 3).map((baseFunc) => (
             <Chip
-              key={subCap.id}
-              label={subCap.name}
+              key={baseFunc.id}
+              label={baseFunc.name}
               size="small"
               variant="outlined"
               sx={{
@@ -179,9 +179,9 @@ export function CapabilityCard({
               }}
             />
           ))}
-          {businessCapability.subCapabilities.length > 3 && (
+          {subCapability.baseFunctions.length > 3 && (
             <Chip
-              label={`+${businessCapability.subCapabilities.length - 3} más`}
+              label={`+${subCapability.baseFunctions.length - 3} mas`}
               size="small"
               variant="outlined"
               sx={{
@@ -215,9 +215,9 @@ export function CapabilityCard({
             },
           }}
         >
-          Ver más
+          Ver mas
         </Button>
-        
+
         {onAddToProject && (
           <Button
             variant="contained"

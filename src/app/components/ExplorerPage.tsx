@@ -20,8 +20,8 @@ import { CapabilityList } from './CapabilityList';
 import { DetailPanel } from './DetailPanel';
 import { SkeletonCard } from './SkeletonCard';
 import { Capability } from '../../core/domain/entities/Capability';
-import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';
 import { SubCapability } from '../../core/domain/entities/SubCapability';
+import { BaseFunction } from '../../core/domain/entities/BaseFunction';
 import { Functionality } from '../../core/domain/entities/Functionality';
 import { CapabilityGroup } from '../../core/domain/entities/CapabilityGroup';
 import { JsonCapabilityRepository } from '../../infrastructure/repositories/JsonCapabilityRepository';
@@ -29,12 +29,12 @@ import { JsonCapabilityGroupRepository } from '../../infrastructure/repositories
 
 const ITEMS_PER_PAGE = 6;
 
-// Tipos para los datos adaptables
+// Tipos para los datos adaptables (nueva estructura v2.0)
 type AdaptableDataItem =
   | { item: Capability; parent: Capability }
-  | { item: BusinessCapability; parent: Capability }
-  | { item: SubCapability; parent: Capability; businessParent: BusinessCapability }
-  | { item: Functionality; parent: Capability; businessParent: BusinessCapability; subParent: SubCapability };
+  | { item: SubCapability; parent: Capability }
+  | { item: BaseFunction; parent: Capability; subParent: SubCapability }
+  | { item: Functionality; parent: Capability; subParent: SubCapability; baseFunctionParent: BaseFunction };
 
 export function ExplorerPage() {
   const theme = useTheme();
@@ -43,14 +43,14 @@ export function ExplorerPage() {
   // Estados principales
   const [capabilityGroups, setCapabilityGroups] = useState<CapabilityGroup[]>([]);
   const [capabilities, setCapabilities] = useState<Capability[]>([]);
-  const [businessCapabilities, setBusinessCapabilities] = useState<{ business: BusinessCapability, parent: Capability }[]>([]);
+  const [subCapabilities, setSubCapabilities] = useState<{ subCapability: SubCapability, parent: Capability }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Estados de búsqueda y filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [hierarchyLevel, setHierarchyLevel] = useState<HierarchyLevel>('business');
+  const [hierarchyLevel, setHierarchyLevel] = useState<HierarchyLevel>('subcapability');
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,9 +60,9 @@ export function ExplorerPage() {
   const [detailCapability, setDetailCapability] = useState<Capability | null>(null);
   const [selectedItemContext, setSelectedItemContext] = useState<{
     level: HierarchyLevel;
-    item: Capability | BusinessCapability | SubCapability | Functionality;
-    businessParent?: BusinessCapability;
+    item: Capability | SubCapability | BaseFunction | Functionality;
     subParent?: SubCapability;
+    baseFunctionParent?: BaseFunction;
   } | undefined>(undefined);
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
@@ -88,15 +88,15 @@ export function ExplorerPage() {
         console.log('Extracted capabilities:', allCapabilities);
         setCapabilities(allCapabilities);
 
-        // Extraer todas las capacidades empresariales con sus padres
-        const allBusinessCapabilities = allCapabilities.flatMap(capability =>
-          capability.businessCapabilities?.map(business => ({
-            business,
+        // Extraer todas las subcapacidades con sus padres
+        const allSubCapabilities = allCapabilities.flatMap(capability =>
+          capability.subCapabilities?.map(subCapability => ({
+            subCapability,
             parent: capability
           })) || []
         );
-        console.log('Extracted business capabilities:', allBusinessCapabilities);
-        setBusinessCapabilities(allBusinessCapabilities);
+        console.log('Extracted sub capabilities:', allSubCapabilities);
+        setSubCapabilities(allSubCapabilities);
       } catch (err) {
         setError('Error al cargar las capacidades BIAN');
         console.error('Error loading data:', err);
@@ -108,7 +108,7 @@ export function ExplorerPage() {
     loadData();
   }, [groupRepository]);
 
-  // Generar datos adaptables según el nivel de jerarquía seleccionado
+  // Generar datos adaptables según el nivel de jerarquía seleccionado (nueva estructura v2.0)
   const adaptableData = useMemo((): AdaptableDataItem[] => {
     if (!capabilities || capabilities.length === 0) {
       return [];
@@ -121,46 +121,46 @@ export function ExplorerPage() {
           parent: capability
         }));
 
-      case 'business':
+      case 'subcapability':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities?.map(business => ({
-            item: business,
+          capability.subCapabilities?.map(subCapability => ({
+            item: subCapability,
             parent: capability
           })) || []
         );
 
-      case 'subcapability':
+      case 'baseFunction':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities?.flatMap(business =>
-            business.subCapabilities?.map(sub => ({
-              item: sub,
+          capability.subCapabilities?.flatMap(subCapability =>
+            subCapability.baseFunctions?.map(baseFunction => ({
+              item: baseFunction,
               parent: capability,
-              businessParent: business
+              subParent: subCapability
             })) || []
           ) || []
         );
 
       case 'functionality':
         return capabilities.flatMap(capability =>
-          capability.businessCapabilities?.flatMap(business =>
-            business.subCapabilities?.flatMap(sub =>
-              sub.functionalities?.map(functionality => ({
+          capability.subCapabilities?.flatMap(subCapability =>
+            subCapability.baseFunctions?.flatMap(baseFunction =>
+              baseFunction.functionalities?.map(functionality => ({
                 item: functionality,
                 parent: capability,
-                businessParent: business,
-                subParent: sub
+                subParent: subCapability,
+                baseFunctionParent: baseFunction
               })) || []
             ) || []
           ) || []
         );
 
       default:
-        return businessCapabilities.map(({ business, parent }) => ({
-          item: business,
+        return subCapabilities.map(({ subCapability, parent }) => ({
+          item: subCapability,
           parent: parent
         }));
     }
-  }, [capabilities, businessCapabilities, hierarchyLevel]);
+  }, [capabilities, subCapabilities, hierarchyLevel]);
 
   // Filtrar y ordenar datos adaptables
   const filteredAndSortedData = useMemo((): AdaptableDataItem[] => {
@@ -192,28 +192,28 @@ export function ExplorerPage() {
           parentMatch = data.parent.name.toLowerCase().includes(searchLower);
         }
 
-        // Búsqueda específica según el tipo
+        // Búsqueda específica según el tipo (nueva estructura v2.0)
         let deepMatch = false;
         switch (hierarchyLevel) {
           case 'capability':
             const capability = item as Capability;
-            deepMatch = capability.businessCapabilities?.some(bc =>
-              bc.name.toLowerCase().includes(searchLower) ||
-              bc.description.toLowerCase().includes(searchLower)
-            ) || false;
-            break;
-          case 'business':
-            const businessCap = item as BusinessCapability;
-            deepMatch = businessCap.subCapabilities?.some(sub =>
-              sub.name.toLowerCase().includes(searchLower) ||
-              sub.functionalities?.some(func =>
-                func.name.toLowerCase().includes(searchLower)
-              )
+            deepMatch = capability.subCapabilities?.some(sc =>
+              sc.name.toLowerCase().includes(searchLower) ||
+              sc.description.toLowerCase().includes(searchLower)
             ) || false;
             break;
           case 'subcapability':
             const subCap = item as SubCapability;
-            deepMatch = subCap.functionalities?.some(func =>
+            deepMatch = subCap.baseFunctions?.some(bf =>
+              bf.name.toLowerCase().includes(searchLower) ||
+              bf.functionalities?.some(func =>
+                func.name.toLowerCase().includes(searchLower)
+              )
+            ) || false;
+            break;
+          case 'baseFunction':
+            const baseFunc = item as BaseFunction;
+            deepMatch = baseFunc.functionalities?.some(func =>
               func.name.toLowerCase().includes(searchLower)
             ) || false;
             break;
@@ -310,9 +310,9 @@ export function ExplorerPage() {
 
   const handleViewDetails = (capability: Capability, context?: {
     level: HierarchyLevel;
-    item: Capability | BusinessCapability | SubCapability | Functionality;
-    businessParent?: BusinessCapability;
+    item: Capability | SubCapability | BaseFunction | Functionality;
     subParent?: SubCapability;
+    baseFunctionParent?: BaseFunction;
   }) => {
     setDetailCapability(capability);
     setSelectedItemContext(context);

@@ -5,8 +5,8 @@ import { StyleType } from '../../core/domain/value-objects/StyleType';
 import { JsonCapabilityGroupRepository } from './JsonCapabilityGroupRepository';
 
 /**
- * Implementación del repositorio de capacidades usando datos JSON
- * Ahora extrae las capacidades desde los grupos de capacidades
+ * Implementacion del repositorio de capacidades usando datos JSON v2.0
+ * Extrae las capacidades desde los grupos de capacidades
  */
 export class JsonCapabilityRepository implements CapabilityRepository {
   private capabilities: Capability[] = [];
@@ -31,7 +31,7 @@ export class JsonCapabilityRepository implements CapabilityRepository {
   }
 
   /**
-   * Recarga las capacidades desde los grupos (útil si los datos cambian)
+   * Recarga las capacidades desde los grupos
    */
   private async reloadCapabilities(): Promise<void> {
     await this.loadData();
@@ -87,7 +87,7 @@ export class JsonCapabilityRepository implements CapabilityRepository {
    */
   async findByName(name: string): Promise<Capability[]> {
     const searchTerm = name.toLowerCase();
-    return this.capabilities.filter(cap => 
+    return this.capabilities.filter(cap =>
       cap.name.toLowerCase().includes(searchTerm)
     );
   }
@@ -100,21 +100,23 @@ export class JsonCapabilityRepository implements CapabilityRepository {
   }
 
   /**
-   * Busca capacidades que contengan el texto en nombre o en sus capacidades empresariales
+   * Busqueda profunda en todos los niveles (nueva estructura v2.0)
    */
   async search(query: string): Promise<Capability[]> {
     const searchTerm = query.toLowerCase();
     return this.capabilities.filter(cap =>
       cap.name.toLowerCase().includes(searchTerm) ||
-      cap.businessCapabilities.some(bc =>
-        bc.name.toLowerCase().includes(searchTerm) ||
-        bc.description.toLowerCase().includes(searchTerm) ||
-        bc.subCapabilities.some(sub =>
-          sub.name.toLowerCase().includes(searchTerm) ||
-          sub.description.toLowerCase().includes(searchTerm) ||
-          sub.functionalities.some(func =>
+      cap.subCapabilities.some(subCap =>
+        subCap.name.toLowerCase().includes(searchTerm) ||
+        subCap.description.toLowerCase().includes(searchTerm) ||
+        subCap.baseFunctions.some(baseFunc =>
+          baseFunc.name.toLowerCase().includes(searchTerm) ||
+          baseFunc.description.toLowerCase().includes(searchTerm) ||
+          baseFunc.functionalities.some(func =>
             func.name.toLowerCase().includes(searchTerm) ||
-            func.description.toLowerCase().includes(searchTerm)
+            func.description.toLowerCase().includes(searchTerm) ||
+            (func.commonComponentName?.toLowerCase().includes(searchTerm) ?? false) ||
+            (func.systemApplication?.toLowerCase().includes(searchTerm) ?? false)
           )
         )
       )
@@ -131,7 +133,7 @@ export class JsonCapabilityRepository implements CapabilityRepository {
 
     let result = [...this.capabilities];
 
-    // Filtrar por grupos específicos
+    // Filtrar por grupos especificos
     if (filters.groupIds && filters.groupIds.length > 0) {
       result = result.filter(cap =>
         filters.groupIds!.includes(cap.groupId)
@@ -153,42 +155,42 @@ export class JsonCapabilityRepository implements CapabilityRepository {
       result = result.filter(cap => cap.isActive === filters.isActive);
     }
 
-    // Filtrar por presencia de capacidades empresariales
+    // Filtrar por presencia de subcapacidades
     if (filters.hasBusinessCapabilities !== undefined) {
       result = result.filter(cap =>
-        cap.hasBusinessCapabilities() === filters.hasBusinessCapabilities
+        cap.hasSubCapabilities() === filters.hasBusinessCapabilities
       );
     }
 
-    // Filtrar por número mínimo de capacidades empresariales
+    // Filtrar por numero minimo de subcapacidades
     if (filters.minBusinessCapabilities !== undefined) {
       result = result.filter(cap =>
-        cap.getTotalBusinessCapabilities() >= filters.minBusinessCapabilities!
+        cap.getTotalSubCapabilities() >= filters.minBusinessCapabilities!
       );
     }
 
-    // Filtrar por número máximo de capacidades empresariales
+    // Filtrar por numero maximo de subcapacidades
     if (filters.maxBusinessCapabilities !== undefined) {
       result = result.filter(cap =>
-        cap.getTotalBusinessCapabilities() <= filters.maxBusinessCapabilities!
+        cap.getTotalSubCapabilities() <= filters.maxBusinessCapabilities!
       );
     }
 
-    // Filtrar por número mínimo de funcionalidades
+    // Filtrar por numero minimo de funcionalidades
     if (filters.minFunctionalities !== undefined) {
       result = result.filter(cap =>
         cap.getTotalFunctionalities() >= filters.minFunctionalities!
       );
     }
 
-    // Filtrar por número máximo de funcionalidades
+    // Filtrar por numero maximo de funcionalidades
     if (filters.maxFunctionalities !== undefined) {
       result = result.filter(cap =>
         cap.getTotalFunctionalities() <= filters.maxFunctionalities!
       );
     }
 
-    // Filtrar por término de búsqueda
+    // Filtrar por termino de busqueda
     if (filters.searchTerm) {
       const searchTerm = filters.searchTerm.toLowerCase();
       result = result.filter(cap =>
@@ -196,7 +198,7 @@ export class JsonCapabilityRepository implements CapabilityRepository {
       );
     }
 
-    // Filtrar por fecha de creación
+    // Filtrar por fecha de creacion
     if (filters.createdAfter) {
       result = result.filter(cap => cap.createdAt >= filters.createdAfter!);
     }

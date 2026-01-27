@@ -24,7 +24,7 @@ import {
 
 export type ViewMode = 'cards' | 'list';
 export type SortOption = 'relevance' | 'alphabetical' | 'id';
-export type HierarchyLevel = 'capability' | 'business' | 'subcapability' | 'functionality';
+export type HierarchyLevel = 'capability' | 'subcapability' | 'baseFunction' | 'functionality';
 
 interface SearchAreaProps {
   searchTerm: string;
@@ -48,9 +48,9 @@ const filterOptions = [
 ];
 
 const hierarchyLevelOptions = [
-  { id: 'capability', label: 'Capacidad', description: 'Vista por capacidades principales' },
-  { id: 'business', label: 'Empresarial', description: 'Vista por capacidades empresariales' },
-  { id: 'subcapability', label: 'Subcapacidad', description: 'Vista por subcapacidades' },
+  { id: 'capability', label: 'Capacidad', description: 'Vista por capacidades empresariales' },
+  { id: 'subcapability', label: 'SubCapacidad', description: 'Vista por subcapacidades' },
+  { id: 'baseFunction', label: 'Func. Base', description: 'Vista por funcionalidades base' },
   { id: 'functionality', label: 'Funcionalidades', description: 'Vista por funcionalidades' },
 ];
 

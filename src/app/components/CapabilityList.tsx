@@ -45,24 +45,24 @@ const getCategoryColor = (category: string): string => {
 const determineCategory = (capability: Capability): string => {
   const name = capability.name.toLowerCase();
 
-  // Obtener descripción de las capacidades empresariales
-  const businessDescriptions = capability.businessCapabilities
-    .map(bc => bc.description.toLowerCase())
+  // Obtener descripcion de las subcapacidades
+  const subCapDescriptions = capability.subCapabilities
+    .map(sc => sc.description.toLowerCase())
     .join(' ');
 
-  if (name.includes('información') || businessDescriptions.includes('información')) {
+  if (name.includes('informacion') || name.includes('información') || subCapDescriptions.includes('informacion')) {
     return 'informacion';
   }
-  if (name.includes('documento') || businessDescriptions.includes('documento')) {
+  if (name.includes('documento') || subCapDescriptions.includes('documento')) {
     return 'documentos';
   }
-  if (name.includes('gestión') || name.includes('gestion') || businessDescriptions.includes('gestión')) {
+  if (name.includes('gestion') || name.includes('gestión') || subCapDescriptions.includes('gestion')) {
     return 'gestion';
   }
-  if (name.includes('validación') || name.includes('validacion') || businessDescriptions.includes('validación')) {
+  if (name.includes('validacion') || name.includes('validación') || subCapDescriptions.includes('validacion')) {
     return 'validacion';
   }
-  if (name.includes('búsqueda') || name.includes('busqueda') || businessDescriptions.includes('búsqueda')) {
+  if (name.includes('busqueda') || name.includes('búsqueda') || subCapDescriptions.includes('busqueda')) {
     return 'busqueda';
   }
 
@@ -157,9 +157,9 @@ export function CapabilityList({
                         overflow: 'hidden',
                       }}
                     >
-                      {capability.businessCapabilities.length > 0
-                        ? capability.businessCapabilities[0].description
-                        : `Capacidad con ${capability.getTotalBusinessCapabilities()} capacidades empresariales`}
+                      {capability.subCapabilities.length > 0
+                        ? capability.subCapabilities[0].description
+                        : `Capacidad con ${capability.getTotalSubCapabilities()} subcapacidades`}
                     </Typography>
                   </Box>
                 </TableCell>

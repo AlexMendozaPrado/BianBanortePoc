@@ -28,8 +28,8 @@ import {
   NavigateNext as NavigateNextIcon,
 } from '@mui/icons-material';
 import { Capability } from '../../core/domain/entities/Capability';
-import { BusinessCapability } from '../../core/domain/entities/BusinessCapability';
 import { SubCapability } from '../../core/domain/entities/SubCapability';
+import { BaseFunction } from '../../core/domain/entities/BaseFunction';
 import { Functionality } from '../../core/domain/entities/Functionality';
 import { HierarchyLevel } from './SearchArea';
 
@@ -38,9 +38,9 @@ interface DetailPanelProps {
   capability: Capability | null;
   selectedItem?: {
     level: HierarchyLevel;
-    item: Capability | BusinessCapability | SubCapability | Functionality;
-    businessParent?: BusinessCapability;
+    item: Capability | SubCapability | BaseFunction | Functionality;
     subParent?: SubCapability;
+    baseFunctionParent?: BaseFunction;
   };
   onClose: () => void;
   onAddToProject?: (capability: Capability) => void;
@@ -81,24 +81,24 @@ export function DetailPanel({
       case 'capability':
         breadcrumbs.push({ label: (selectedItem.item as Capability).name, active: true });
         break;
-      case 'business':
-        breadcrumbs.push(
-          { label: capability?.name || '', active: false },
-          { label: (selectedItem.item as BusinessCapability).name, active: true }
-        );
-        break;
       case 'subcapability':
         breadcrumbs.push(
           { label: capability?.name || '', active: false },
-          { label: selectedItem.businessParent?.name || '', active: false },
           { label: (selectedItem.item as SubCapability).name, active: true }
+        );
+        break;
+      case 'baseFunction':
+        breadcrumbs.push(
+          { label: capability?.name || '', active: false },
+          { label: selectedItem.subParent?.name || '', active: false },
+          { label: (selectedItem.item as BaseFunction).name, active: true }
         );
         break;
       case 'functionality':
         breadcrumbs.push(
           { label: capability?.name || '', active: false },
-          { label: selectedItem.businessParent?.name || '', active: false },
           { label: selectedItem.subParent?.name || '', active: false },
+          { label: selectedItem.baseFunctionParent?.name || '', active: false },
           { label: (selectedItem.item as Functionality).name, active: true }
         );
         break;
@@ -107,14 +107,14 @@ export function DetailPanel({
     return breadcrumbs;
   };
 
-  // Obtener información principal a mostrar
+  // Obtener información principal a mostrar (nueva estructura v2.0)
   const getMainContent = () => {
     if (!selectedItem) {
       return {
         title: capability?.name || '',
         id: capability?.id.value || '',
-        description: (capability?.businessCapabilities?.length ?? 0) > 0
-          ? capability?.businessCapabilities?.[0]?.description || 'Sin descripción disponible'
+        description: (capability?.subCapabilities?.length ?? 0) > 0
+          ? capability?.subCapabilities?.[0]?.description || 'Sin descripción disponible'
           : 'Capacidad BIAN sin descripción detallada disponible.',
         type: 'Capacidad'
       };
@@ -128,18 +128,10 @@ export function DetailPanel({
         return {
           title: cap.name,
           id: cap.id.value,
-          description: cap.businessCapabilities.length > 0
-            ? cap.businessCapabilities[0].description
+          description: cap.subCapabilities.length > 0
+            ? cap.subCapabilities[0].description
             : 'Capacidad BIAN sin descripción detallada disponible.',
           type: 'Capacidad'
-        };
-      case 'business':
-        const business = item as BusinessCapability;
-        return {
-          title: business.name,
-          id: business.id,
-          description: business.description || 'Capacidad empresarial sin descripción.',
-          type: 'Capacidad Empresarial'
         };
       case 'subcapability':
         const sub = item as SubCapability;
@@ -148,6 +140,14 @@ export function DetailPanel({
           id: sub.id,
           description: sub.description || 'Subcapacidad sin descripción.',
           type: 'Subcapacidad'
+        };
+      case 'baseFunction':
+        const baseFunc = item as BaseFunction;
+        return {
+          title: baseFunc.name,
+          id: baseFunc.id,
+          description: baseFunc.description || 'Funcionalidad base sin descripción.',
+          type: 'Funcionalidad Base'
         };
       case 'functionality':
         const func = item as Functionality;
@@ -281,7 +281,7 @@ export function DetailPanel({
           {mainContent.description}
         </Typography>
         
-        {/* Stats chips dinámicos */}
+        {/* Stats chips dinámicos (nueva estructura v2.0) */}
         <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
           {selectedItem ? (
             (() => {
@@ -291,7 +291,7 @@ export function DetailPanel({
                   return (
                     <>
                       <Chip
-                        label={`${cap.getTotalBusinessCapabilities()} capacidades empresariales`}
+                        label={`${cap.getTotalSubCapabilities()} subcapacidades`}
                         size="small"
                         sx={{ backgroundColor: '#EBF0F2', color: '#5B6670' }}
                       />
@@ -302,39 +302,57 @@ export function DetailPanel({
                       />
                     </>
                   );
-                case 'business':
-                  const business = selectedItem.item as BusinessCapability;
-                  const businessFuncCount = business.subCapabilities.reduce((total, sub) => total + sub.functionalities.length, 0);
+                case 'subcapability':
+                  const sub = selectedItem.item as SubCapability;
                   return (
                     <>
                       <Chip
-                        label={`${business.subCapabilities.length} subcapacidades`}
+                        label={`${sub.baseFunctions.length} funcionalidades base`}
                         size="small"
                         sx={{ backgroundColor: '#EBF0F2', color: '#5B6670' }}
                       />
                       <Chip
-                        label={`${businessFuncCount} funcionalidades`}
+                        label={`${sub.getTotalFunctionalities()} funcionalidades`}
                         size="small"
                         sx={{ backgroundColor: '#EBF0F2', color: '#5B6670' }}
                       />
                     </>
                   );
-                case 'subcapability':
-                  const sub = selectedItem.item as SubCapability;
+                case 'baseFunction':
+                  const baseFunc = selectedItem.item as BaseFunction;
                   return (
                     <Chip
-                      label={`${sub.functionalities.length} funcionalidades`}
+                      label={`${baseFunc.functionalities.length} funcionalidades`}
                       size="small"
                       sx={{ backgroundColor: '#EBF0F2', color: '#5B6670' }}
                     />
                   );
                 case 'functionality':
+                  const func = selectedItem.item as Functionality;
                   return (
-                    <Chip
-                      label="Funcionalidad específica"
-                      size="small"
-                      sx={{ backgroundColor: '#4CAF50', color: 'white' }}
-                    />
+                    <>
+                      {func.level && (
+                        <Chip
+                          label={`Nivel ${func.level}`}
+                          size="small"
+                          sx={{ backgroundColor: '#4CAF50', color: 'white' }}
+                        />
+                      )}
+                      {func.systemApplication && (
+                        <Chip
+                          label={func.systemApplication}
+                          size="small"
+                          sx={{ backgroundColor: '#2196F3', color: 'white' }}
+                        />
+                      )}
+                      {func.commonComponentName && (
+                        <Chip
+                          label={func.commonComponentName}
+                          size="small"
+                          sx={{ backgroundColor: '#9C27B0', color: 'white' }}
+                        />
+                      )}
+                    </>
                   );
                 default:
                   return null;
@@ -343,7 +361,7 @@ export function DetailPanel({
           ) : (
             <>
               <Chip
-                label={`${capability.getTotalBusinessCapabilities()} capacidades empresariales`}
+                label={`${capability.getTotalSubCapabilities()} subcapacidades`}
                 size="small"
                 sx={{ backgroundColor: '#EBF0F2', color: '#5B6670' }}
               />
@@ -374,9 +392,9 @@ export function DetailPanel({
       </Typography>
 
       <Box sx={{ mb: 3, maxHeight: '400px', overflowY: 'auto' }}>
-        {capability.businessCapabilities.map((businessCapability, index) => (
+        {capability.subCapabilities.map((subCapability, index) => (
           <Accordion
-            key={businessCapability.id}
+            key={subCapability.id}
             expanded={expandedAccordion === `panel${index}`}
             onChange={handleAccordionChange(`panel${index}`)}
             sx={{
@@ -399,10 +417,10 @@ export function DetailPanel({
             >
               <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                 <Typography sx={{ fontWeight: '500', flex: 1 }}>
-                  {businessCapability.name}
+                  {subCapability.name}
                 </Typography>
                 <Chip
-                  label={businessCapability.subCapabilities.length}
+                  label={subCapability.baseFunctions.length}
                   size="small"
                   sx={{
                     backgroundColor: '#EBF0F2',
@@ -416,15 +434,15 @@ export function DetailPanel({
             </AccordionSummary>
             <AccordionDetails sx={{ pt: 0 }}>
               <Typography variant="body2" sx={{ color: '#5B6670', mb: 2, fontSize: '13px' }}>
-                {businessCapability.description}
+                {subCapability.description}
               </Typography>
               <List dense sx={{ py: 0 }}>
-                {businessCapability.subCapabilities.map((subCapability) => (
-                  <Box key={subCapability.id} sx={{ mb: 2 }}>
+                {subCapability.baseFunctions.map((baseFunction) => (
+                  <Box key={baseFunction.id} sx={{ mb: 2 }}>
                     <ListItem sx={{ px: 0, py: 0.5, bgcolor: '#F8F9FA', borderRadius: 1 }}>
                       <ListItemText
-                        primary={subCapability.name}
-                        secondary={`${subCapability.id} • ${subCapability.functionalities.length} funcionalidades`}
+                        primary={baseFunction.name}
+                        secondary={`${baseFunction.id} • ${baseFunction.functionalities.length} funcionalidades`}
                         primaryTypographyProps={{
                           fontSize: '13px',
                           fontWeight: '600',
@@ -436,19 +454,36 @@ export function DetailPanel({
                         }}
                       />
                     </ListItem>
-                    {subCapability.functionalities.length > 0 && (
+                    {baseFunction.functionalities.length > 0 && (
                       <Box sx={{ ml: 2, mt: 1 }}>
-                        {subCapability.functionalities.map((functionality) => (
+                        {baseFunction.functionalities.map((functionality) => (
                           <Box key={functionality.id} sx={{ mb: 1, p: 1, bgcolor: '#FAFBFC', borderRadius: 1, border: '1px solid #EBF0F2' }}>
-                            <Typography sx={{ fontSize: '12px', fontWeight: '500', color: '#323E48', mb: 0.5 }}>
-                              {functionality.name}
-                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
+                              <Typography sx={{ fontSize: '12px', fontWeight: '500', color: '#323E48' }}>
+                                {functionality.name}
+                              </Typography>
+                              {functionality.level && (
+                                <Chip
+                                  label={`Nivel ${functionality.level}`}
+                                  size="small"
+                                  sx={{ fontSize: '10px', height: '18px', backgroundColor: '#4CAF50', color: 'white' }}
+                                />
+                              )}
+                            </Box>
                             <Typography sx={{ fontSize: '11px', color: '#5B6670', mb: 0.5 }}>
                               ID: {functionality.id}
+                              {functionality.systemApplication && ` • ${functionality.systemApplication}`}
                             </Typography>
                             <Typography sx={{ fontSize: '11px', color: '#5B6670', lineHeight: 1.4 }}>
                               {functionality.description}
                             </Typography>
+                            {functionality.commonComponentName && (
+                              <Chip
+                                label={functionality.commonComponentName}
+                                size="small"
+                                sx={{ mt: 1, fontSize: '10px', height: '18px', backgroundColor: '#9C27B0', color: 'white' }}
+                              />
+                            )}
                           </Box>
                         ))}
                       </Box>

@@ -2,7 +2,8 @@ import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroup
 import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
 
 /**
- * DTO para representar la jerarquía completa de capacidades
+ * DTO para representar la jerarquía completa de capacidades (v2.0)
+ * Nueva estructura: Capability → SubCapability → BaseFunction → Functionality
  */
 export interface CapabilityHierarchyDto {
   group: {
@@ -14,11 +15,11 @@ export interface CapabilityHierarchyDto {
   capabilities: {
     id: string;
     name: string;
-    businessCapabilities: {
+    subCapabilities: {
       id: string;
       name: string;
       description: string;
-      subCapabilities: {
+      baseFunctions: {
         id: string;
         name: string;
         description: string;
@@ -26,6 +27,10 @@ export interface CapabilityHierarchyDto {
           id: string;
           name: string;
           description: string;
+          level?: number;
+          systemApplication?: string;
+          commonComponentId?: string;
+          commonComponentName?: string;
           isActive: boolean;
         }[];
       }[];
@@ -67,7 +72,7 @@ export class GetCapabilityHierarchyUseCase {
   }
 
   /**
-   * Mapea un grupo de capacidades a su representación jerárquica
+   * Mapea un grupo de capacidades a su representación jerárquica (v2.0)
    */
   private mapGroupToHierarchy(group: CapabilityGroup): CapabilityHierarchyDto {
     return {
@@ -80,18 +85,22 @@ export class GetCapabilityHierarchyUseCase {
       capabilities: group.capabilities.map(capability => ({
         id: capability.id.value,
         name: capability.name,
-        businessCapabilities: capability.businessCapabilities.map(businessCap => ({
-          id: businessCap.id,
-          name: businessCap.name,
-          description: businessCap.description,
-          subCapabilities: businessCap.subCapabilities.map(subCap => ({
-            id: subCap.id,
-            name: subCap.name,
-            description: subCap.description,
-            functionalities: subCap.functionalities.map(func => ({
+        subCapabilities: capability.subCapabilities.map(subCap => ({
+          id: subCap.id,
+          name: subCap.name,
+          description: subCap.description,
+          baseFunctions: subCap.baseFunctions.map(baseFunc => ({
+            id: baseFunc.id,
+            name: baseFunc.name,
+            description: baseFunc.description,
+            functionalities: baseFunc.functionalities.map(func => ({
               id: func.id,
               name: func.name,
               description: func.description,
+              level: func.level,
+              systemApplication: func.systemApplication,
+              commonComponentId: func.commonComponentId,
+              commonComponentName: func.commonComponentName,
               isActive: func.isActive,
             })),
           })),

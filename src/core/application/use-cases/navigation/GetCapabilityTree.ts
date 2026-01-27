@@ -2,13 +2,14 @@ import { CapabilityGroupRepository } from '../../../domain/ports/CapabilityGroup
 import { CapabilityGroup } from '../../../domain/entities/CapabilityGroup';
 
 /**
- * Caso de uso para obtener el árbol de capacidades con nueva estructura de 5 niveles
+ * Caso de uso para obtener el árbol de capacidades con nueva estructura de 6 niveles (v2.0)
+ * Group → Capability → SubCapability → BaseFunction → Functionality
  */
 export class GetCapabilityTree {
   constructor(private readonly capabilityGroupRepository: CapabilityGroupRepository) {}
 
   /**
-   * Ejecuta la obtención del árbol de capacidades con estructura de 5 niveles
+   * Ejecuta la obtención del árbol de capacidades con estructura de 6 niveles
    */
   async execute(request: GetCapabilityTreeRequest = {}): Promise<GetCapabilityTreeResponse> {
     try {
@@ -20,7 +21,7 @@ export class GetCapabilityTree {
       // Filtrar grupos si es necesario
       const filteredGroups = this.filterCapabilityGroups(capabilityGroups, request);
 
-      // Construir árbol de 5 niveles
+      // Construir árbol de 6 niveles
       const tree = this.buildCapabilityTree(filteredGroups);
 
       // Calcular estadísticas
@@ -81,7 +82,7 @@ export class GetCapabilityTree {
   }
 
   /**
-   * Construye el árbol de capacidades con estructura de 5 niveles
+   * Construye el árbol de capacidades con estructura de 6 niveles (v2.0)
    */
   private buildCapabilityTree(groups: CapabilityGroup[]): CapabilityTreeNode[] {
     // Crear nodos del árbol para cada grupo
@@ -98,8 +99,8 @@ export class GetCapabilityTree {
           style: group.style.getValue(),
           styleColor: group.style.getColor(),
           totalCapabilities: group.capabilities.length,
-          totalBusinessCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalBusinessCapabilities(), 0),
-          totalSubCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.businessCapabilities.reduce((subSum, businessCap) => subSum + businessCap.subCapabilities.length, 0), 0),
+          totalSubCapabilities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalSubCapabilities(), 0),
+          totalBaseFunctions: group.capabilities.reduce((sum, cap) => sum + cap.getTotalBaseFunctions(), 0),
           totalFunctionalities: group.capabilities.reduce((sum, cap) => sum + cap.getTotalFunctionalities(), 0),
           isActive: group.isActive
         }
@@ -112,18 +113,18 @@ export class GetCapabilityTree {
   }
 
   /**
-   * Construye un nodo para una capacidad específica con nueva estructura de 5 niveles
+   * Construye un nodo para una capacidad específica con nueva estructura de 6 niveles (v2.0)
    */
   private buildCapabilityNode(capability: any): CapabilityTreeNode {
-    const businessCapabilityNodes = capability.businessCapabilities.map((businessCap: any) => ({
-      id: businessCap.id,
-      name: businessCap.name,
-      type: 'business' as const,
-      children: businessCap.subCapabilities.map((subCap: any) => ({
-        id: subCap.id,
-        name: subCap.name,
-        type: 'subcapability' as const,
-        children: subCap.functionalities.map((func: any) => ({
+    const subCapabilityNodes = capability.subCapabilities.map((subCap: any) => ({
+      id: subCap.id,
+      name: subCap.name,
+      type: 'subcapability' as const,
+      children: subCap.baseFunctions.map((baseFunc: any) => ({
+        id: baseFunc.id,
+        name: baseFunc.name,
+        type: 'baseFunction' as const,
+        children: baseFunc.functionalities.map((func: any) => ({
           id: func.id,
           name: func.name,
           type: 'functionality' as const,
@@ -131,6 +132,10 @@ export class GetCapabilityTree {
           isExpanded: false,
           metadata: {
             description: func.description,
+            level: func.level,
+            systemApplication: func.systemApplication,
+            commonComponentId: func.commonComponentId,
+            commonComponentName: func.commonComponentName,
             isActive: func.isActive,
             isCompletelyDefined: func.isCompletelyDefined(),
             canBeActivated: func.canBeActivated()
@@ -138,19 +143,19 @@ export class GetCapabilityTree {
         })),
         isExpanded: false,
         metadata: {
-          description: subCap.description,
-          totalFunctionalities: subCap.functionalities.length,
-          isActive: subCap.isActive,
-          canBeActivated: subCap.canBeActivated()
+          description: baseFunc.description,
+          totalFunctionalities: baseFunc.functionalities.length,
+          isActive: baseFunc.isActive,
+          canBeActivated: baseFunc.canBeActivated()
         }
       })),
       isExpanded: false,
       metadata: {
-        description: businessCap.description,
-        totalSubCapabilities: businessCap.subCapabilities.length,
-        totalFunctionalities: businessCap.getAllFunctionalities().length,
-        isActive: businessCap.isActive,
-        isReadyForProduction: businessCap.isReadyForProduction()
+        description: subCap.description,
+        totalBaseFunctions: subCap.baseFunctions.length,
+        totalFunctionalities: subCap.getTotalFunctionalities(),
+        isActive: subCap.isActive,
+        canBeActivated: subCap.canBeActivated()
       }
     }));
 
@@ -158,11 +163,12 @@ export class GetCapabilityTree {
       id: capability.id.getValue(),
       name: capability.name,
       type: 'capability',
-      children: businessCapabilityNodes,
+      children: subCapabilityNodes,
       isExpanded: false,
       metadata: {
         groupId: capability.groupId,
-        totalBusinessCapabilities: capability.getTotalBusinessCapabilities(),
+        totalSubCapabilities: capability.getTotalSubCapabilities(),
+        totalBaseFunctions: capability.getTotalBaseFunctions(),
         totalFunctionalities: capability.getTotalFunctionalities(),
         isActive: capability.isActive,
         canBeActivated: capability.canBeActivated()
@@ -171,13 +177,13 @@ export class GetCapabilityTree {
   }
 
   /**
-   * Calcula estadísticas del árbol con nueva estructura de 5 niveles
+   * Calcula estadísticas del árbol con nueva estructura de 6 niveles (v2.0)
    */
   private calculateTreeStats(tree: CapabilityTreeNode[]): TreeStats {
     let totalGroups = 0;
     let totalCapabilities = 0;
-    let totalBusinessCapabilities = 0;
     let totalSubCapabilities = 0;
+    let totalBaseFunctions = 0;
     let totalFunctionalities = 0;
 
     tree.forEach(groupNode => {
@@ -186,12 +192,12 @@ export class GetCapabilityTree {
       groupNode.children.forEach(capabilityNode => {
         totalCapabilities++;
 
-        capabilityNode.children.forEach(businessCapabilityNode => {
-          totalBusinessCapabilities++;
+        capabilityNode.children.forEach(subCapabilityNode => {
+          totalSubCapabilities++;
 
-          businessCapabilityNode.children.forEach(subCapabilityNode => {
-            totalSubCapabilities++;
-            totalFunctionalities += subCapabilityNode.children.length;
+          subCapabilityNode.children.forEach(baseFunctionNode => {
+            totalBaseFunctions++;
+            totalFunctionalities += baseFunctionNode.children.length;
           });
         });
       });
@@ -200,15 +206,15 @@ export class GetCapabilityTree {
     return {
       totalGroups,
       totalCapabilities,
-      totalBusinessCapabilities,
       totalSubCapabilities,
+      totalBaseFunctions,
       totalFunctionalities
     };
   }
 }
 
 /**
- * Solicitud para obtener el árbol de capacidades (nueva estructura)
+ * Solicitud para obtener el árbol de capacidades (v2.0)
  */
 export interface GetCapabilityTreeRequest {
   activeOnly?: boolean;
@@ -218,7 +224,7 @@ export interface GetCapabilityTreeRequest {
 }
 
 /**
- * Respuesta con el árbol de capacidades (nueva estructura)
+ * Respuesta con el árbol de capacidades (v2.0)
  */
 export interface GetCapabilityTreeResponse {
   success: boolean;
@@ -230,24 +236,24 @@ export interface GetCapabilityTreeResponse {
 }
 
 /**
- * Nodo del árbol de capacidades (5 niveles)
+ * Nodo del árbol de capacidades (6 niveles v2.0)
  */
 export interface CapabilityTreeNode {
   id: string;
   name: string;
-  type: 'group' | 'capability' | 'business' | 'subcapability' | 'functionality';
+  type: 'group' | 'capability' | 'subcapability' | 'baseFunction' | 'functionality';
   children: CapabilityTreeNode[];
   isExpanded: boolean;
   metadata?: Record<string, any>;
 }
 
 /**
- * Estadísticas del árbol (nueva estructura)
+ * Estadísticas del árbol (v2.0)
  */
 export interface TreeStats {
   totalGroups: number;
   totalCapabilities: number;
-  totalBusinessCapabilities: number;
   totalSubCapabilities: number;
+  totalBaseFunctions: number;
   totalFunctionalities: number;
 }

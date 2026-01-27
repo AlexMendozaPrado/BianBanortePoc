@@ -8,16 +8,22 @@ import {
   Box,
   Typography,
   Chip,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   Folder as FolderIcon,
-  FolderOpen as FolderOpenIcon,
-  Description as DescriptionIcon,
+  Category as CategoryIcon,
+  Functions as FunctionsIcon,
+  OpenInNew as OpenInNewIcon,
 } from '@mui/icons-material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { CapabilityGroup } from '../../core/domain/entities/CapabilityGroup';
+import { BaseFunction } from '../../core/domain/entities/BaseFunction';
+import { Functionality } from '../../core/domain/entities/Functionality';
+import { FunctionalitiesModal } from './FunctionalitiesModal';
 
 interface SidebarProps {
   capabilityGroups: CapabilityGroup[];
@@ -41,7 +47,51 @@ export function Sidebar({
   const [searchTerm, setSearchTerm] = useState('');
   const [expanded, setExpanded] = useState<string[]>([]);
 
-  // Filtrar grupos de capacidades basado en el término de búsqueda
+  // Estado para el modal de funcionalidades
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedBaseFunction, setSelectedBaseFunction] = useState<BaseFunction | null>(null);
+  const [modalBreadcrumb, setModalBreadcrumb] = useState({
+    groupName: '',
+    capabilityName: '',
+    subCapabilityName: '',
+  });
+
+  const handleOpenModal = (
+    baseFunction: BaseFunction,
+    groupName: string,
+    capabilityName: string,
+    subCapabilityName: string,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation();
+    setSelectedBaseFunction(baseFunction);
+    setModalBreadcrumb({ groupName, capabilityName, subCapabilityName });
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedBaseFunction(null);
+  };
+
+  const handleFunctionalitySelectFromModal = (functionality: Functionality) => {
+    // Encontrar la información necesaria para llamar onFunctionalitySelect
+    if (selectedBaseFunction) {
+      // Buscar la capacidad y subcapacidad que contienen esta funcionalidad
+      for (const group of capabilityGroups) {
+        for (const capability of group.capabilities) {
+          for (const subCap of capability.subCapabilities) {
+            if (subCap.baseFunctions.some(bf => bf.id === selectedBaseFunction.id)) {
+              onFunctionalitySelect(capability.id.value, subCap.id, functionality.id);
+              return;
+            }
+          }
+        }
+      }
+    }
+  };
+
+  // Filtrar grupos de capacidades basado en el término de búsqueda (nueva estructura v2.0)
   const filteredCapabilityGroups = useMemo(() => {
     if (!capabilityGroups || capabilityGroups.length === 0) return [];
     if (!searchTerm) return capabilityGroups;
@@ -54,19 +104,19 @@ export function Sidebar({
       const capabilityMatch = group.capabilities.some(capability => {
         const nameMatch = capability.name.toLowerCase().includes(searchLower);
 
-        // Buscar en capacidades empresariales
-        const businessMatch = capability.businessCapabilities.some(bc =>
-          bc.name.toLowerCase().includes(searchLower) ||
-          bc.description.toLowerCase().includes(searchLower) ||
-          bc.subCapabilities.some(sub =>
-            sub.name.toLowerCase().includes(searchLower) ||
-            sub.functionalities.some(func =>
+        // Buscar en subcapacidades
+        const subCapMatch = capability.subCapabilities.some(sc =>
+          sc.name.toLowerCase().includes(searchLower) ||
+          sc.description.toLowerCase().includes(searchLower) ||
+          sc.baseFunctions.some(bf =>
+            bf.name.toLowerCase().includes(searchLower) ||
+            bf.functionalities.some(func =>
               func.name.toLowerCase().includes(searchLower)
             )
           )
         );
 
-        return nameMatch || businessMatch;
+        return nameMatch || subCapMatch;
       });
 
       return groupNameMatch || capabilityMatch;
@@ -76,10 +126,10 @@ export function Sidebar({
   const handleSelect = (_: React.SyntheticEvent, nodeId: string) => {
     const parts = nodeId.split('-');
 
-    if (parts.includes('group')) {
+    if (parts.includes('group') && parts.length === 2) {
       // Grupo seleccionado - no hacemos nada especial, solo expandir/contraer
       return;
-    } else if (parts.includes('cap') && !parts.includes('business')) {
+    } else if (parts.includes('cap') && !parts.includes('sub')) {
       // Capacidad seleccionada (ej: "group-0-cap-0")
       const groupIndex = parseInt(parts[1]);
       const capIndex = parseInt(parts[3]);
@@ -88,49 +138,50 @@ export function Sidebar({
         const capability = group.capabilities[capIndex];
         onCapabilitySelect(capability.id.value);
       }
-    } else if (parts.includes('business') && !parts.includes('sub')) {
-      // Capacidad empresarial seleccionada (ej: "group-0-cap-0-business-0")
+    } else if (parts.includes('sub') && !parts.includes('base')) {
+      // Subcapacidad seleccionada (ej: "group-0-cap-0-sub-0")
       const groupIndex = parseInt(parts[1]);
       const capIndex = parseInt(parts[3]);
-      const group = capabilityGroups[groupIndex];
-      if (group && group.capabilities[capIndex]) {
-        const capability = group.capabilities[capIndex];
-        onCapabilitySelect(capability.id.value); // Seleccionar la capacidad principal
-      }
-    } else if (parts.includes('sub') && !parts.includes('func')) {
-      // Subcapacidad seleccionada (ej: "group-0-cap-0-business-0-sub-0")
-      const groupIndex = parseInt(parts[1]);
-      const capIndex = parseInt(parts[3]);
-      const businessIndex = parseInt(parts[5]);
-      const subIndex = parseInt(parts[7]);
+      const subIndex = parseInt(parts[5]);
       const group = capabilityGroups[groupIndex];
 
       if (group && group.capabilities[capIndex] &&
-          group.capabilities[capIndex].businessCapabilities[businessIndex] &&
-          group.capabilities[capIndex].businessCapabilities[businessIndex].subCapabilities[subIndex]) {
+          group.capabilities[capIndex].subCapabilities[subIndex]) {
 
         const capability = group.capabilities[capIndex];
-        const subCapability = capability.businessCapabilities[businessIndex].subCapabilities[subIndex];
+        const subCapability = capability.subCapabilities[subIndex];
         onSubCapabilitySelect(capability.id.value, subCapability.id);
       }
-    } else if (parts.includes('func')) {
-      // Funcionalidad seleccionada (ej: "group-0-cap-0-business-0-sub-0-func-0")
+    } else if (parts.includes('base') && !parts.includes('func')) {
+      // BaseFunction seleccionada (ej: "group-0-cap-0-sub-0-base-0")
       const groupIndex = parseInt(parts[1]);
       const capIndex = parseInt(parts[3]);
-      const businessIndex = parseInt(parts[5]);
-      const subIndex = parseInt(parts[7]);
+      const subIndex = parseInt(parts[5]);
+      const group = capabilityGroups[groupIndex];
+
+      if (group && group.capabilities[capIndex] &&
+          group.capabilities[capIndex].subCapabilities[subIndex]) {
+
+        const capability = group.capabilities[capIndex];
+        onCapabilitySelect(capability.id.value);
+      }
+    } else if (parts.includes('func')) {
+      // Funcionalidad seleccionada (ej: "group-0-cap-0-sub-0-base-0-func-0")
+      const groupIndex = parseInt(parts[1]);
+      const capIndex = parseInt(parts[3]);
+      const subIndex = parseInt(parts[5]);
+      const baseIndex = parseInt(parts[7]);
       const funcIndex = parseInt(parts[9]);
       const group = capabilityGroups[groupIndex];
 
       if (group && group.capabilities[capIndex] &&
-          group.capabilities[capIndex].businessCapabilities[businessIndex] &&
-          group.capabilities[capIndex].businessCapabilities[businessIndex].subCapabilities[subIndex] &&
-          group.capabilities[capIndex].businessCapabilities[businessIndex].subCapabilities[subIndex].functionalities[funcIndex]) {
+          group.capabilities[capIndex].subCapabilities[subIndex] &&
+          group.capabilities[capIndex].subCapabilities[subIndex].baseFunctions[baseIndex] &&
+          group.capabilities[capIndex].subCapabilities[subIndex].baseFunctions[baseIndex].functionalities[funcIndex]) {
 
         const capability = group.capabilities[capIndex];
-        const businessCapability = capability.businessCapabilities[businessIndex];
-        const subCapability = businessCapability.subCapabilities[subIndex];
-        const functionality = subCapability.functionalities[funcIndex];
+        const subCapability = capability.subCapabilities[subIndex];
+        const functionality = subCapability.baseFunctions[baseIndex].functionalities[funcIndex];
         onFunctionalitySelect(capability.id.value, subCapability.id, functionality.id);
       }
     }
@@ -192,7 +243,7 @@ export function Sidebar({
                       {capability.name}
                     </Typography>
                     <Chip
-                      label={capability.businessCapabilities?.length || 0}
+                      label={capability.subCapabilities?.length || 0}
                       size="small"
                       sx={{
                         ml: 'auto',
@@ -228,147 +279,137 @@ export function Sidebar({
                   },
                 }}
               >
-                {capability.businessCapabilities?.map((businessCapability, businessIndex) => {
-                  const businessCapabilityId = `group-${groupIndex}-cap-${capIndex}-business-${businessIndex}`;
+                {capability.subCapabilities?.map((subCapability, subIndex) => {
+                  const subCapabilityId = `group-${groupIndex}-cap-${capIndex}-sub-${subIndex}`;
+                  const totalFuncs = subCapability.baseFunctions?.reduce(
+                    (acc, bf) => acc + (bf.functionalities?.length || 0), 0
+                  ) || 0;
 
                   return (
                     <TreeItem
-                      key={businessCapabilityId}
-                      itemId={businessCapabilityId}
+                      key={subCapabilityId}
+                      itemId={subCapabilityId}
                       label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', py: 0.5 }}>
-                          <FolderIcon sx={{ mr: 1, fontSize: 14, color: '#5B6670' }} />
-                          <Typography variant="body2">
-                            {businessCapability.name}
-                          </Typography>
-                          <Chip
-                            label={businessCapability.subCapabilities?.length || 0}
-                            size="small"
-                            sx={{
-                              ml: 'auto',
-                              height: 18,
-                              fontSize: '10px',
-                              backgroundColor: '#EBF0F2',
-                              color: '#5B6670',
-                            }}
-                          />
-                        </Box>
+                        <Tooltip title={subCapability.description || subCapability.name} arrow placement="right">
+                          <span style={{ display: 'flex', alignItems: 'center', padding: '4px 0', width: '100%' }}>
+                            <CategoryIcon sx={{ mr: 1, fontSize: 16, color: '#1976d2' }} />
+                            <Typography variant="body2" sx={{ fontWeight: 500, flex: 1, minWidth: 0 }} noWrap>
+                              {subCapability.name}
+                            </Typography>
+                            <Chip
+                              label={`${subCapability.baseFunctions?.length || 0} / ${totalFuncs}`}
+                              size="small"
+                              sx={{
+                                ml: 1,
+                                height: 20,
+                                fontSize: '10px',
+                                backgroundColor: '#e3f2fd',
+                                color: '#1976d2',
+                                fontWeight: 'bold',
+                                '& .MuiChip-label': { px: 1 },
+                              }}
+                            />
+                          </span>
+                        </Tooltip>
                       }
                       sx={{
-                        ml: 2,
+                        ml: 1,
                         '& .MuiTreeItem-content': {
-                          padding: '2px 8px',
+                          padding: '4px 8px',
                           borderRadius: '4px',
+                          borderLeft: '2px solid #1976d2',
                           '&:hover': {
-                            backgroundColor: '#EBF0F2',
+                            backgroundColor: '#e3f2fd',
                           },
                           '&.Mui-selected': {
-                            backgroundColor: '#EB0029 !important',
+                            backgroundColor: '#1976d2 !important',
                             color: 'white',
-                            '& .MuiTypography-root': {
-                              color: 'white',
-                            },
-                            '& .MuiSvgIcon-root': {
-                              color: 'white',
-                            },
+                            '& .MuiTypography-root': { color: 'white' },
+                            '& .MuiSvgIcon-root': { color: 'white' },
                             '& .MuiChip-root': {
-                              backgroundColor: 'rgba(255,255,255,0.2)',
+                              backgroundColor: 'rgba(255,255,255,0.25)',
                               color: 'white',
                             },
                           },
                         },
                       }}
                     >
-                      {businessCapability.subCapabilities?.map((subCapability, subIndex) => {
-                        const subCapabilityId = `group-${groupIndex}-cap-${capIndex}-business-${businessIndex}-sub-${subIndex}`;
+                      {subCapability.baseFunctions?.map((baseFunction, baseIndex) => {
+                        const baseFunctionId = `group-${groupIndex}-cap-${capIndex}-sub-${subIndex}-base-${baseIndex}`;
+                        const funcCount = baseFunction.functionalities?.length || 0;
 
                         return (
                           <TreeItem
-                            key={subCapabilityId}
-                            itemId={subCapabilityId}
+                            key={baseFunctionId}
+                            itemId={baseFunctionId}
                             label={
-                              <Box sx={{ display: 'flex', alignItems: 'center', py: 0.5 }}>
-                                <FolderOpenIcon sx={{ mr: 1, fontSize: 14, color: '#5B6670' }} />
-                                <Typography variant="body2">
-                                  {subCapability.name}
-                                </Typography>
-                                <Chip
-                                  label={subCapability.functionalities?.length || 0}
-                                  size="small"
-                                  sx={{
-                                    ml: 'auto',
-                                    height: 18,
-                                    fontSize: '10px',
-                                    backgroundColor: '#EBF0F2',
-                                    color: '#5B6670',
-                                  }}
-                                />
-                              </Box>
+                              <Tooltip title={baseFunction.description || `${funcCount} funcionalidades`} arrow placement="right">
+                                <span style={{ display: 'flex', alignItems: 'center', padding: '4px 0', width: '100%' }}>
+                                  <FunctionsIcon sx={{ mr: 1, fontSize: 16, color: '#7b1fa2' }} />
+                                  <Typography variant="body2" sx={{ fontWeight: 500, flex: 1, minWidth: 0 }} noWrap>
+                                    {baseFunction.name}
+                                  </Typography>
+                                  <Chip
+                                    label={funcCount}
+                                    size="small"
+                                    sx={{
+                                      mr: 0.5,
+                                      height: 20,
+                                      fontSize: '10px',
+                                      backgroundColor: '#f3e5f5',
+                                      color: '#7b1fa2',
+                                      fontWeight: 'bold',
+                                      minWidth: 24,
+                                      '& .MuiChip-label': { px: 0.75 },
+                                    }}
+                                  />
+                                  <IconButton
+                                    size="small"
+                                    onClick={(e) => handleOpenModal(
+                                      baseFunction,
+                                      group.name,
+                                      capability.name,
+                                      subCapability.name,
+                                      e
+                                    )}
+                                    sx={{
+                                      p: 0.25,
+                                      color: '#7b1fa2',
+                                      '&:hover': {
+                                        backgroundColor: 'rgba(123, 31, 162, 0.1)',
+                                      },
+                                    }}
+                                  >
+                                    <OpenInNewIcon sx={{ fontSize: 14 }} />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
                             }
                             sx={{
-                              ml: 2,
+                              ml: 1,
                               '& .MuiTreeItem-content': {
-                                padding: '2px 8px',
+                                padding: '4px 8px',
                                 borderRadius: '4px',
+                                borderLeft: '2px solid #7b1fa2',
                                 '&:hover': {
-                                  backgroundColor: '#EBF0F2',
+                                  backgroundColor: '#f3e5f5',
                                 },
                                 '&.Mui-selected': {
-                                  backgroundColor: '#EB0029 !important',
+                                  backgroundColor: '#7b1fa2 !important',
                                   color: 'white',
-                                  '& .MuiTypography-root': {
-                                    color: 'white',
-                                  },
-                                  '& .MuiSvgIcon-root': {
-                                    color: 'white',
-                                  },
+                                  '& .MuiTypography-root': { color: 'white' },
+                                  '& .MuiSvgIcon-root': { color: 'white' },
                                   '& .MuiChip-root': {
-                                    backgroundColor: 'rgba(255,255,255,0.2)',
+                                    backgroundColor: 'rgba(255,255,255,0.25)',
+                                    color: 'white',
+                                  },
+                                  '& .MuiIconButton-root': {
                                     color: 'white',
                                   },
                                 },
                               },
                             }}
-                          >
-                            {subCapability.functionalities?.map((functionality, funcIndex) => {
-                              const functionalityId = `group-${groupIndex}-cap-${capIndex}-business-${businessIndex}-sub-${subIndex}-func-${funcIndex}`;
-
-                              return (
-                                <TreeItem
-                                  key={functionalityId}
-                                  itemId={functionalityId}
-                                  label={
-                                    <Box sx={{ display: 'flex', alignItems: 'center', py: 0.5 }}>
-                                      <DescriptionIcon sx={{ mr: 1, fontSize: 12, color: '#5B6670' }} />
-                                      <Typography variant="body2" sx={{ fontSize: '13px' }}>
-                                        {functionality.name}
-                                      </Typography>
-                                    </Box>
-                                  }
-                                  sx={{
-                                    ml: 2,
-                                    '& .MuiTreeItem-content': {
-                                      padding: '2px 8px',
-                                      borderRadius: '4px',
-                                      '&:hover': {
-                                        backgroundColor: '#EBF0F2',
-                                      },
-                                      '&.Mui-selected': {
-                                        backgroundColor: '#EB0029 !important',
-                                        color: 'white',
-                                        '& .MuiTypography-root': {
-                                          color: 'white',
-                                        },
-                                        '& .MuiSvgIcon-root': {
-                                          color: 'white',
-                                        },
-                                      },
-                                    },
-                                  }}
-                                />
-                              );
-                            })}
-                          </TreeItem>
+                          />
                         );
                       })}
                     </TreeItem>
@@ -472,6 +513,15 @@ export function Sidebar({
           {filteredCapabilityGroups && renderTreeItems(filteredCapabilityGroups)}
         </SimpleTreeView>
       </Box>
+
+      {/* Modal de funcionalidades */}
+      <FunctionalitiesModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        baseFunction={selectedBaseFunction}
+        breadcrumb={modalBreadcrumb}
+        onFunctionalitySelect={handleFunctionalitySelectFromModal}
+      />
     </Drawer>
   );
 }
